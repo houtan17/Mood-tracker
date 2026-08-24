@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ثبت حال روزانه</title>
+
+  <!-- Font (falls back to system fonts when offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Styles: order matters (variables first) -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <h1 class="app-title" id="appTitle">ثبت حال روزانه</h1>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="exportBtn">پشتیبان‌گیری</button>
+        <button class="btn btn-ghost" id="importBtn">بازیابی</button>
+        <input type="file" id="importFileInput" accept="application/json,.json" hidden />
+        <button class="btn btn-ghost" id="langToggle">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main class="container">
+    <section class="card">
+      <div class="calendar-header">
+        <button class="nav-btn" id="prevMonthBtn" aria-label="prev">‹</button>
+        <h2 class="month-title" id="monthTitle"></h2>
+        <button class="nav-btn" id="nextMonthBtn" aria-label="next">›</button>
+      </div>
+
+      <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+        <button class="btn btn-primary today-btn" id="todayBtn">امروز</button>
+      </div>
+
+      <div class="weekday-row" id="weekdayRow"></div>
+      <div class="days-grid" id="daysGrid"></div>
+
+      <div class="mood-legend" id="moodLegend"></div>
+    </section>
+  </main>
+
+  <!-- ===== Day modal ===== -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="card modal-card">
+      <button class="modal-close" id="closeModalBtn" aria-label="close">×</button>
+      <h3 class="modal-date" id="modalDateTitle"></h3>
+      <div class="mood-picker" id="moodPicker"></div>
+      <textarea class="note-input" id="noteInput"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-danger-ghost" id="deleteEntryBtn">حذف روز</button>
+        <button class="btn btn-primary" id="saveEntryBtn">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toast holder ===== -->
+  <div class="toast-holder" id="toastHolder"></div>
+
+  <!-- Scripts: order matters -->
+  <script src="js/jalali.js"></script>
+  <script src="js/moods.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
