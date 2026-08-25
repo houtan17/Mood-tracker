@@ -7,7 +7,7 @@
    get the fresh version on next load.
    ============================================ */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
 
 /* Core assets cached on install (app shell).

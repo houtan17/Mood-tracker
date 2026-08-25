@@ -20,7 +20,15 @@ body {
   color: var(--text);
   font-family: var(--font-fa);
   line-height: 1.5;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Faster, cleaner taps on touch devices (kills the click delay) */
+button,
+a,
+.day-cell {
+  touch-action: manipulation;
 }
 
 /* Generic show/hide helper */

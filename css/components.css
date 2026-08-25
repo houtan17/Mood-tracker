@@ -71,7 +71,7 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 20px;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
   animation: card-in 0.35s ease both;
 }
 
@@ -141,11 +141,13 @@
   justify-content: center;
   gap: 3px;
   padding: 4px 2px;
-  transition: border-color 0.15s, background-color 0.15s,
-    transform 0.12s ease, box-shadow 0.12s ease;
+  /* No background-color transition: theme switches stay cheap
+     (transform-only transitions keep hover/press effects smooth) */
+  transition: border-color 0.15s, transform 0.12s ease, box-shadow 0.12s ease;
   /* Staggered entrance (delay set inline per cell) */
   animation: day-in 0.3s ease both;
-  will-change: opacity, transform;
+  /* Isolate layout/paint so one cell never forces page-wide repaints */
+  contain: content;
 }
 
 @keyframes day-in {
@@ -393,49 +395,130 @@
   100% { opacity: 0; transform: translateY(0); }
 }
 
-/* ----- Mobile tweaks ----- */
+/* ----- Mobile tweaks -----
+   Compact header: smaller buttons so all labels fit on one line
+   without overlap; tighter calendar; lighter shadows. */
 @media (max-width: 540px) {
+  .container {
+    padding: 14px 10px;
+  }
+
+  /* Header */
   .header-inner {
     gap: 4px;
-    padding: 10px 12px;
+    padding: 8px 8px;
   }
 
   .app-title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .greet-btn {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     padding: 4px 6px;
   }
 
   .header-actions {
     gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    white-space: nowrap;
   }
 
   .header-actions .btn:not(.icon-btn) {
-    padding: 7px 9px;
-    font-size: 0.72rem;
+    padding: 6px 8px;
+    font-size: 0.66rem;
+  }
+
+  .header-actions .icon-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  /* Calendar */
+  .days-grid,
+  .weekday-row {
+    gap: 4px;
   }
 
   .day-cell {
-    min-height: 46px;
+    min-height: 44px;
+    border-radius: 9px;
+  }
+
+  .weekday-cell {
+    font-size: 0.66rem;
+    padding: 4px 0;
   }
 
   .day-number {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .day-mood {
-    font-size: 0.92rem;
+    font-size: 0.88rem;
+  }
+
+  /* Lighter shadows = cheaper paints while scrolling */
+  .card {
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
   }
 
   .mood-option small {
     display: none;
   }
 
-  .card {
-    padding: 14px;
-    border-radius: var(--radius-sm);
+  .legend-item {
+    font-size: 0.68rem;
+    padding: 4px 8px;
+  }
+
+  .toast-box {
+    font-size: 0.78rem;
+    max-width: calc(100vw - 32px);
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+/* Very narrow phones: shrink further, never overlap */
+@media (max-width: 380px) {
+  .header-inner {
+    gap: 3px;
+  }
+
+  .app-title {
+    font-size: 0.82rem;
+  }
+
+  .greet-btn {
+    font-size: 0.72rem;
+    padding: 3px 4px;
+  }
+
+  .header-actions {
+    gap: 3px;
+  }
+
+  .header-actions .btn:not(.icon-btn) {
+    padding: 5px 6px;
+    font-size: 0.6rem;
+  }
+
+  .header-actions .icon-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.92rem;
+  }
+
+  .nav-btn {
+    width: 34px;
+    height: 34px;
   }
 }
