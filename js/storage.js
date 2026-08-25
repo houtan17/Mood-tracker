@@ -91,19 +91,30 @@ var Storage = (function () {
     },
 
     /* Merges entries from a backup file into existing data.
+       Only well-shaped entries are accepted.
        Calls back with (errorMessage | null). */
     importFromFile: function (file, done) {
       var reader = new FileReader();
       reader.onload = function () {
         try {
           var incoming = JSON.parse(reader.result);
-          if (!incoming || typeof incoming.entries !== "object") {
+          if (!incoming || typeof incoming.entries !== "object" ||
+            Array.isArray(incoming.entries)) {
             done("invalid");
             return;
           }
+          var keyRe = /^\d{4}-\d{2}-\d{2}$/;
           var data = load();
           Object.keys(incoming.entries).forEach(function (k) {
-            data.entries[k] = incoming.entries[k];
+            var e = incoming.entries[k];
+            if (!keyRe.test(k) || !e || typeof e !== "object") return;
+            if (typeof e.mood !== "number" || e.mood < 1 || e.mood > Moods.COUNT) return;
+            if (e.note != null && typeof e.note !== "string") return;
+            data.entries[k] = {
+              mood: e.mood,
+              note: typeof e.note === "string" ? e.note : "",
+              updatedAt: typeof e.updatedAt === "number" ? e.updatedAt : Date.now()
+            };
           });
           save(data);
           done(null);

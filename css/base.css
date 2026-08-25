@@ -16,10 +16,16 @@ html {
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--bg-gradient);
   color: var(--text);
   font-family: var(--font-fa);
   line-height: 1.5;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Generic show/hide helper */
+.hidden {
+  display: none !important;
 }
 
 html[lang="en"] body {
@@ -43,4 +49,17 @@ h1,
 h2,
 h3 {
   font-weight: 700;
+}
+
+/* ----- Performance & accessibility guard -----
+   Kills all animations/transitions for users who
+   ask the OS for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

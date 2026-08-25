@@ -7,7 +7,7 @@
    get the fresh version on next load.
    ============================================ */
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
 
 /* Core assets cached on install (app shell).
@@ -25,6 +25,7 @@ const PRECACHE_URLS = [
   'js/moods.js',
   'js/i18n.js',
   'js/storage.js',
+  'js/theme.js',
   'js/calendar.js',
   'js/app.js',
   'icons/icon-192.png',

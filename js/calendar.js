@@ -6,11 +6,26 @@
 var Calendar = (function () {
   "use strict";
 
+  /* Editable window: today + this many days back */
+  var MAX_PAST_DAYS = 5;
+
   var state = { jy: 0, jm: 0 };
   var onDayClick = null;
 
   function today() {
     return Jalali.today();
+  }
+
+  /* Days between a date and today.
+     0 = today, 1 = yesterday, negative = future. */
+  function dayDistance(jy, jm, jd) {
+    var t = today();
+    return Jalali.jdn(t.jy, t.jm, t.jd) - Jalali.jdn(jy, jm, jd);
+  }
+
+  function isEditable(jy, jm, jd) {
+    var dist = dayDistance(jy, jm, jd);
+    return dist >= 0 && dist <= MAX_PAST_DAYS;
   }
 
   function render() {
@@ -52,12 +67,25 @@ var Calendar = (function () {
       cell.type = "button";
       cell.className = "day-cell";
 
+      /* Staggered entrance delay (GPU-friendly transform/opacity only) */
+      cell.style.animationDelay = Math.min((leading + d) * 8, 400) + "ms";
+
       if (t.jy === state.jy && t.jm === state.jm && t.jd === d) {
         cell.classList.add("is-today");
+      }
+      /* Friday = weekend column (Saturday-first index 6) */
+      if ((leading + d - 1) % 7 === 6) {
+        cell.classList.add("is-weekend");
       }
       if (selectedDay && selectedDay.jy === state.jy &&
         selectedDay.jm === state.jm && selectedDay.jd === d) {
         cell.classList.add("is-selected");
+      }
+
+      /* Lock future days and days older than the editable window */
+      if (!isEditable(state.jy, state.jm, d)) {
+        cell.classList.add("is-disabled");
+        cell.disabled = true;
       }
 
       var entry = Storage.getEntry(state.jy, state.jm, d);
@@ -70,11 +98,13 @@ var Calendar = (function () {
       cell.innerHTML =
         '<span class="day-number">' + I18N.formatNumber(d) + "</span>" + moodHtml;
 
-      (function (day) {
-        cell.addEventListener("click", function () {
-          if (onDayClick) onDayClick({ jy: state.jy, jm: state.jm, jd: day });
-        });
-      })(d);
+      if (!cell.disabled) {
+        (function (day) {
+          cell.addEventListener("click", function () {
+            if (onDayClick) onDayClick({ jy: state.jy, jm: state.jm, jd: day });
+          });
+        })(d);
+      }
 
       grid.appendChild(cell);
     }
@@ -87,6 +117,7 @@ var Calendar = (function () {
     },
 
     render: render,
+    isEditable: isEditable,
 
     goToday: function () {
       var t = today();

@@ -1,7 +1,8 @@
 /* ============================================
    APP
    Initialization, modal, language switching,
-   export/import, toast messages.
+   export/import, toast messages, user name +
+   time-based greeting, day-edit restrictions.
    ============================================ */
 
 var App = (function () {
@@ -9,6 +10,7 @@ var App = (function () {
 
   var selectedDate = null; // { jy, jm, jd }
   var selectedMood = null;
+  var firstVisit = false;
 
   /* ----- Helpers ----- */
   function $(id) { return document.getElementById(id); }
@@ -49,13 +51,72 @@ var App = (function () {
     $("saveEntryBtn").textContent = I18N.t("save");
     $("deleteEntryBtn").textContent = I18N.t("remove");
     $("noteInput").placeholder = I18N.t("notePlaceholder");
+    $("nameInput").placeholder = I18N.t("namePlaceholder");
+    $("saveNameBtn").textContent = I18N.t("startBtn");
+    $("cancelNameBtn").textContent = I18N.t("cancel");
+    $("githubLink").title = I18N.t("githubLabel");
+    $("githubLink").setAttribute("aria-label", I18N.t("githubLabel"));
     setChevrons();
+    renderGreeting();
   }
 
   function applyAll() {
     applyTexts();
     renderLegend();
     Calendar.render();
+    ThemeManager.refresh();
+  }
+
+  /* ----- Greeting (time of day + stored name) ----- */
+  function greetingKey() {
+    var h = new Date().getHours();
+    if (h < 12) return "greetMorning";
+    if (h < 17) return "greetAfternoon";
+    return "greetEvening";
+  }
+
+  function renderGreeting() {
+    var btn = $("greetBtn");
+    var name = Storage.getSetting("userName");
+
+    if (!name) {
+      btn.classList.add("hidden");
+      return;
+    }
+    btn.classList.remove("hidden");
+
+    var sep = I18N.lang === "fa" ? "\u060C " : ", ";
+    $("greetText").textContent =
+      I18N.t(greetingKey()) + sep + name;
+
+    document.title = $("greetText").textContent + " — " + I18N.t("title");
+  }
+
+  /* ----- Name dialog (first visit / rename) ----- */
+  function promptName(isFirstVisit) {
+    firstVisit = !!isFirstVisit;
+    $("welcomeTitle").textContent =
+      firstVisit ? I18N.t("welcomeTitle") : I18N.t("editNameTitle");
+    $("cancelNameBtn").style.display = firstVisit ? "none" : "";
+    $("nameInput").value = Storage.getSetting("userName") || "";
+    $("welcomeOverlay").classList.remove("hidden");
+    setTimeout(function () { $("nameInput").focus(); }, 50);
+  }
+
+  function closeNameDialog() {
+    $("welcomeOverlay").classList.add("hidden");
+    firstVisit = false;
+  }
+
+  function saveName() {
+    var name = $("nameInput").value.trim();
+    if (!name) {
+      showToast(I18N.t("nameRequiredMsg"));
+      return;
+    }
+    Storage.setSetting("userName", name);
+    closeNameDialog();
+    renderGreeting();
   }
 
   /* ----- Modal ----- */
@@ -80,11 +141,17 @@ var App = (function () {
   }
 
   function openModal(date) {
+    if (!Calendar.isEditable(date.jy, date.jm, date.jd)) return;
+
     selectedDate = date;
     var entry = Storage.getEntry(date.jy, date.jm, date.jd);
     selectedMood = entry ? entry.mood : null;
     $("noteInput").value = entry && entry.note ? entry.note : "";
     $("modalDateTitle").textContent = I18N.formatFullDate(date.jy, date.jm, date.jd);
+
+    /* Hide delete when there is nothing to delete */
+    $("deleteEntryBtn").style.display = entry ? "" : "none";
+
     renderMoodPicker();
     $("modalOverlay").classList.remove("hidden");
   }
@@ -94,6 +161,26 @@ var App = (function () {
     selectedDate = null;
     selectedMood = null;
     Calendar.render();
+  }
+
+  function anyOverlayOpen() {
+    return !$("modalOverlay").classList.contains("hidden") ||
+      !$("welcomeOverlay").classList.contains("hidden");
+  }
+
+  function closeOverlays() {
+    if (!$("modalOverlay").classList.contains("hidden")) closeModal();
+    if (!firstVisit && !$("welcomeOverlay").classList.contains("hidden")) {
+      closeNameDialog();
+    }
+  }
+
+  /* ----- Timers (greeting + auto theme re-check) ----- */
+  function startTimers() {
+    setInterval(function () {
+      renderGreeting();
+      ThemeManager.refresh();
+    }, 60000);
   }
 
   /* ----- Events ----- */
@@ -108,10 +195,18 @@ var App = (function () {
     });
 
     $("saveEntryBtn").addEventListener("click", function () {
-      if (!selectedDate || !selectedMood) {
-        showToast(I18N.t("importErrorMsg")); // fallback text, should not happen
+      if (!selectedDate) return;
+
+      /* Defense in depth: never save outside the editable window */
+      if (!Calendar.isEditable(selectedDate.jy, selectedDate.jm, selectedDate.jd)) {
+        showToast(I18N.t("dateLockedMsg"));
         return;
       }
+      if (!selectedMood) {
+        showToast(I18N.t("selectMoodMsg"));
+        return;
+      }
+
       Storage.setEntry(selectedDate.jy, selectedDate.jm, selectedDate.jd,
         selectedMood, $("noteInput").value.trim());
       closeModal();
@@ -153,6 +248,19 @@ var App = (function () {
       Storage.setSetting("lang", lang);
       applyAll();
     });
+
+    /* Name dialog */
+    $("greetBtn").addEventListener("click", function () { promptName(false); });
+    $("saveNameBtn").addEventListener("click", saveName);
+    $("cancelNameBtn").addEventListener("click", closeNameDialog);
+    $("nameInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") saveName();
+    });
+
+    /* Escape closes whichever overlay is open */
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && anyOverlayOpen()) closeOverlays();
+    });
   }
 
   /* ----- Init ----- */
@@ -161,8 +269,20 @@ var App = (function () {
     I18N.setLang(savedLang === "en" ? "en" : "fa");
 
     wireEvents();
-    applyAll();
+
+    /* Calendar month must be initialized BEFORE any render
+       (fixes the invalid jy=0/jm=0 first paint) */
     Calendar.init(openModal);
+
+    ThemeManager.init();
+    applyAll();
+
+    startTimers();
+
+    /* First visit → ask for the user's name */
+    if (!Storage.getSetting("userName")) {
+      promptName(true);
+    }
   }
 
   document.addEventListener("DOMContentLoaded", init);

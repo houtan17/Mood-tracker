@@ -29,6 +29,23 @@
   />
 
   <!-- Styles: order matters (variables first) -->
+  <!-- Apply saved/auto theme before first paint (no flash) -->
+  <script>
+    (function () {
+      var theme = "light";
+      try {
+        var data = JSON.parse(localStorage.getItem("moodTracker.v1") || "{}");
+        var mode = data && data.settings && data.settings.theme;
+        if (mode === "light" || mode === "dark") {
+          theme = mode;
+        } else {
+          var h = new Date().getHours();
+          theme = (h >= 6 && h < 18) ? "light" : "dark"; // sunset estimate
+        }
+      } catch (e) { /* keep light */ }
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
@@ -38,8 +55,12 @@
   <!-- ===== Header ===== -->
   <header class="app-header">
     <div class="header-inner">
+      <button class="greet-btn hidden" id="greetBtn">
+        <span id="greetText"></span>
+      </button>
       <h1 class="app-title" id="appTitle">ثبت حال روزانه</h1>
       <div class="header-actions">
+        <button class="btn btn-ghost icon-btn" id="themeToggle">🌓</button>
         <button class="btn btn-ghost" id="exportBtn">پشتیبان‌گیری</button>
         <button class="btn btn-ghost" id="importBtn">بازیابی</button>
         <input type="file" id="importFileInput" accept="application/json,.json" hidden />
@@ -68,6 +89,16 @@
     </section>
   </main>
 
+  <!-- ===== Footer ===== -->
+  <footer class="app-footer">
+    <a class="github-btn" id="githubLink" href="https://github.com/houtan17/Mood-tracker"
+       target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+    </a>
+  </footer>
+
   <!-- ===== Day modal ===== -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="card modal-card">
@@ -82,6 +113,18 @@
     </div>
   </div>
 
+  <!-- ===== Name dialog (first visit / rename) ===== -->
+  <div class="modal-overlay hidden" id="welcomeOverlay">
+    <div class="card modal-card">
+      <h3 class="modal-date" id="welcomeTitle"></h3>
+      <input type="text" class="name-input" id="nameInput" maxlength="30" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelNameBtn">انصراف</button>
+        <button class="btn btn-primary" id="saveNameBtn">شروع کنیم</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Toast holder ===== -->
   <div class="toast-holder" id="toastHolder"></div>
 
@@ -90,6 +133,7 @@
   <script src="js/moods.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/calendar.js"></script>
   <script src="js/app.js"></script>
 

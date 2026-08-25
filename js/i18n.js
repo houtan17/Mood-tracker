@@ -28,7 +28,23 @@ var I18N = (function () {
       deletedMsg: "حذف شد",
       importedMsg: "اطلاعات بازیابی شد",
       importErrorMsg: "فایل پشتیبان نامعتبر است",
-      confirmDelete: "این روز حذف شود؟"
+      confirmDelete: "این روز حذف شود؟",
+      selectMoodMsg: "اول یکی از حال‌ها را انتخاب کن",
+      dateLockedMsg: "این روز قابل ثبت نیست",
+      greetMorning: "صبح بخیر",
+      greetAfternoon: "بعدازظهر بخیر",
+      greetEvening: "شب بخیر",
+      welcomeTitle: "خوش اومدی! اسمت چیه؟",
+      editNameTitle: "اسمت رو تغییر بده",
+      namePlaceholder: "مثلاً سارا",
+      nameRequiredMsg: "لطفاً نامت را وارد کن",
+      startBtn: "شروع کنیم",
+      cancel: "انصراف",
+      themeLight: "روشن",
+      themeDark: "تیره",
+      themeAuto: "خودکار",
+      themeToggleTitle: "تغییر پوسته",
+      githubLabel: "گیت‌هاب — سورس پروژه"
     },
 
     en: {
@@ -50,7 +66,23 @@ var I18N = (function () {
       deletedMsg: "Deleted",
       importedMsg: "Backup restored",
       importErrorMsg: "Invalid backup file",
-      confirmDelete: "Delete this day?"
+      confirmDelete: "Delete this day?",
+      selectMoodMsg: "Pick a mood first",
+      dateLockedMsg: "This day can't be edited",
+      greetMorning: "Good morning",
+      greetAfternoon: "Good afternoon",
+      greetEvening: "Good evening",
+      welcomeTitle: "Welcome! What's your name?",
+      editNameTitle: "Change your name",
+      namePlaceholder: "e.g. Sara",
+      nameRequiredMsg: "Please enter your name",
+      startBtn: "Let's start",
+      cancel: "Cancel",
+      themeLight: "Light",
+      themeDark: "Dark",
+      themeAuto: "Auto",
+      themeToggleTitle: "Change theme",
+      githubLabel: "GitHub — project source"
     }
   };
 

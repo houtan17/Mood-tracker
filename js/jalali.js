@@ -94,6 +94,8 @@ var Jalali = (function () {
   return {
     toJalali: function (gy, gm, gd) { return d2j(g2d(gy, gm, gd)); },
     toGregorian: function (jy, jm, jd) { return d2g(j2d(jy, jm, jd)); },
+    /* Jalali date -> Julian Day Number (for day-distance math) */
+    jdn: function (jy, jm, jd) { return j2d(jy, jm, jd); },
     isLeapYear: function (jy) { return jalCal(jy).leap === 0; },
     monthLength: function (jy, jm) {
       if (jm <= 6) return 31;
