@@ -1,0 +1,94 @@
+/* ============================================
+   THEME TOKENS
+   Edit colors, radius and shadows here to
+   re-theme the whole app.
+   :root                = light palette
+   html[data-theme=dark]= dark palette
+   ============================================ */
+
+:root {
+  color-scheme: light;
+
+  /* Backgrounds */
+  --bg: #f4f6fb;
+  --bg-gradient: linear-gradient(165deg, #eef3ff 0%, #f7f5ff 48%, #fdf4ec 100%);
+  --card: #ffffff;
+  --header-glass: rgba(255, 255, 255, 0.72);
+  --border: #e6eaf3;
+  --overlay: rgba(38, 48, 67, 0.35);
+
+  /* Text */
+  --text: #263043;
+  --text-muted: #8a94ab;
+
+  /* Accent (primary + secondary stop of gradients) */
+  --primary: #5b7cfa;
+  --primary-2: #8b5cf6;
+  --primary-dark: #4a68e0;
+  --primary-soft: #eef2ff;
+
+  /* Danger (delete button) */
+  --danger: #ef5350;
+  --danger-soft: #fdecec;
+
+  /* Mood palette: mood-1 = best ... mood-5 = worst */
+  --mood-1-bg: #e0f6e7;
+  --mood-1-color: #2e9e57;
+  --mood-2-bg: #edf7da;
+  --mood-2-color: #71a632;
+  --mood-3-bg: #fff3d9;
+  --mood-3-color: #c98a1b;
+  --mood-4-bg: #ffeadb;
+  --mood-4-color: #e07a3f;
+  --mood-5-bg: #fde3e3;
+  --mood-5-color: #d84a4a;
+
+  /* Shape & effects */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 10px 30px rgba(70, 80, 130, 0.10);
+  --shadow-lg: 0 14px 40px rgba(70, 80, 130, 0.16);
+  --glow: 0 6px 18px rgba(91, 124, 250, 0.35);
+
+  /* Fonts */
+  --font-fa: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+  --font-en: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ----- Dark palette ----- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0f1220;
+  --bg-gradient: linear-gradient(165deg, #0b0e1c 0%, #121830 55%, #1a1430 100%);
+  --card: #181d2e;
+  --header-glass: rgba(15, 18, 32, 0.72);
+  --border: #2a3145;
+  --overlay: rgba(0, 0, 0, 0.55);
+
+  --text: #e9edf7;
+  --text-muted: #9099b0;
+
+  --primary: #7d95ff;
+  --primary-2: #a78bfa;
+  --primary-dark: #98acff;
+  --primary-soft: #232b47;
+
+  --danger: #f27572;
+  --danger-soft: #3a2226;
+
+  --mood-1-bg: #16321f;
+  --mood-1-color: #4fce7c;
+  --mood-2-bg: #25301a;
+  --mood-2-color: #a3cf5f;
+  --mood-3-bg: #33270e;
+  --mood-3-color: #e6b04f;
+  --mood-4-bg: #362211;
+  --mood-4-color: #ef9558;
+  --mood-5-bg: #38191b;
+  --mood-5-color: #f07575;
+
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.55);
+  --glow: 0 6px 18px rgba(125, 149, 255, 0.28);
+}
