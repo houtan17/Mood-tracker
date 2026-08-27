@@ -48,6 +48,12 @@ button {
   cursor: pointer;
 }
 
+/* Links follow the surrounding text color, no underline */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 textarea {
   font: inherit;
   color: inherit;

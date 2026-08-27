@@ -85,11 +85,53 @@
   font-size: 1.15rem;
 }
 
-/* ----- Footer ----- */
+/* ----- Footer -----
+   Row of buttons (to-do + GitHub); wraps on very
+   narrow screens but individual buttons never shrink. */
 .app-footer {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 18px 0 30px;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 16px 30px;
+}
+
+/* ----- To-do list button (next to GitHub) -----
+   Clearly visible gradient pill; flex-shrink: 0
+   keeps it from being squeezed on small screens. */
+.todo-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--glow);
+  transition: transform 0.15s ease, box-shadow 0.15s, filter 0.15s;
+}
+
+.todo-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.05);
+}
+
+.todo-btn:active {
+  transform: scale(0.96);
+}
+
+.todo-btn-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.todo-btn-label {
+  white-space: nowrap;
 }
 
 .github-btn {

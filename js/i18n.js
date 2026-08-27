@@ -44,6 +44,7 @@ var I18N = (function () {
       themeDark: "تیره",
       themeAuto: "خودکار",
       themeToggleTitle: "تغییر پوسته",
+      todoList: "لیست کارها",
       githubLabel: "گیت‌هاب — سورس پروژه"
     },
 
@@ -82,6 +83,7 @@ var I18N = (function () {
       themeDark: "Dark",
       themeAuto: "Auto",
       themeToggleTitle: "Change theme",
+      todoList: "To-Do List",
       githubLabel: "GitHub — project source"
     }
   };

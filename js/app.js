@@ -56,6 +56,9 @@ var App = (function () {
     $("cancelNameBtn").textContent = I18N.t("cancel");
     $("githubLink").title = I18N.t("githubLabel");
     $("githubLink").setAttribute("aria-label", I18N.t("githubLabel"));
+    $("todoLinkLabel").textContent = I18N.t("todoList");
+    $("todoLink").title = I18N.t("todoList");
+    $("todoLink").setAttribute("aria-label", I18N.t("todoList"));
     setChevrons();
     renderGreeting();
   }
