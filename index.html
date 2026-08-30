@@ -33,47 +33,19 @@
       rel="stylesheet"
     />
 
-    <!-- Styles: order matters (variables first) -->
-    <!-- Apply saved/auto theme before first paint (no flash) -->
-    <script>
-      (function () {
-        var theme = "light";
-        try {
-          var data = JSON.parse(localStorage.getItem("moodTracker.v1") || "{}");
-          var mode = data && data.settings && data.settings.theme;
-          if (mode === "light" || mode === "dark") {
-            theme = mode;
-          } else {
-            var h = new Date().getHours();
-            theme = h >= 6 && h < 18 ? "light" : "dark"; // sunset estimate
-          }
-        } catch (e) {
-          /* keep light */
-        }
-        document.documentElement.setAttribute("data-theme", theme);
-      })();
-    </script>
+    <!-- Styles: order matters (variables first).
+         Analytics lives in js/pwa.js (single copy). -->
+    <script src="js/theme-init.js"></script>
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/todo.css" />
+    <link rel="stylesheet" href="css/home.css" />
 
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-CWVQMFX1BG"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-CWVQMFX1BG");
-    </script>
   </head>
-  <body>
+  <body data-view="home">
     <!-- ===== Header ===== -->
     <header class="app-header">
       <div class="header-inner">
@@ -83,46 +55,151 @@
         <h1 class="app-title" id="appTitle">ثبت حال روزانه</h1>
         <div class="header-actions">
           <button class="btn btn-ghost icon-btn" id="themeToggle">🌓</button>
-          <button class="btn btn-ghost" id="exportBtn">پشتیبان‌گیری</button>
-          <button class="btn btn-ghost" id="importBtn">بازیابی</button>
-          <input
-            type="file"
-            id="importFileInput"
-            accept="application/json,.json"
-            hidden
-          />
+          <button class="btn btn-ghost" id="dashboardBtn" type="button">داشبورد</button>
           <button class="btn btn-ghost" id="langToggle">EN</button>
+          <div class="streak-badge" id="streakBadge" role="status"></div>
         </div>
       </div>
     </header>
 
     <!-- ===== Main ===== -->
-    <main class="container">
-      <section class="card">
-        <div class="calendar-header">
-          <button class="nav-btn" id="prevMonthBtn" aria-label="prev">‹</button>
-          <h2 class="month-title" id="monthTitle"></h2>
-          <button class="nav-btn" id="nextMonthBtn" aria-label="next">›</button>
+    <main class="container container-wide">
+      <div class="home-layout">
+        <!-- ===== Left panel: Year Counter ===== -->
+        <aside class="card panel panel-year" id="yearPanel">
+          <div class="panel-head">
+            <h2 class="panel-title" id="yearTitle">شمارنده سال</h2>
+            <span class="year-value" id="yearValue"></span>
+          </div>
+          <div class="year-grid" id="yearGrid" aria-hidden="true"></div>
+          <div class="year-footer">
+            <span class="year-stat year-stat-passed" id="yearPassed"></span>
+            <span class="year-pct" id="yearPct"></span>
+            <span class="year-stat year-stat-left" id="yearLeft"></span>
+          </div>
+        </aside>
+
+        <!-- ===== Center: calendar (home view) ===== -->
+        <div class="home-center" id="viewHome">
+          <section class="card">
+            <div class="calendar-header">
+              <button class="nav-btn" id="prevMonthBtn" aria-label="prev">‹</button>
+              <h2 class="month-title" id="monthTitle"></h2>
+              <button class="nav-btn" id="nextMonthBtn" aria-label="next">›</button>
+            </div>
+
+            <div
+              style="display: flex; justify-content: center; margin-bottom: 12px"
+            >
+              <button class="btn btn-primary today-btn" id="todayBtn">امروز</button>
+            </div>
+
+            <div class="weekday-row" id="weekdayRow"></div>
+            <div class="days-grid" id="daysGrid"></div>
+
+            <div class="mood-legend" id="moodLegend"></div>
+          </section>
         </div>
 
-        <div
-          style="display: flex; justify-content: center; margin-bottom: 12px"
-        >
-          <button class="btn btn-primary today-btn" id="todayBtn">امروز</button>
+        <!-- ===== Right panel: To-Do List ===== -->
+        <aside class="card panel panel-todo" id="todoPanel">
+          <div class="panel-head">
+            <h2 class="panel-title" id="todoPanelTitle">لیست کارها</h2>
+          </div>
+          <form class="todo-add-form" id="todoAddForm">
+            <input
+              type="text"
+              class="todo-input"
+              id="todoInput"
+              maxlength="200"
+              placeholder="یک کار جدید بنویس..."
+              autocomplete="off"
+            />
+            <button type="submit" class="btn btn-primary todo-add-btn" id="todoAddBtn">
+              ＋ افزودن
+            </button>
+          </form>
+
+          <p class="todo-count" id="todoCount"></p>
+
+          <ul class="todo-list" id="todoList"></ul>
+
+          <div class="todo-empty hidden" id="todoEmpty">
+            <span class="todo-empty-emoji" aria-hidden="true">🗒️</span>
+            <p>هنوز کاری اضافه نشده.</p>
+          </div>
+        </aside>
+      </div>
+
+      <!-- ===== Dashboard view (embedded former dashboard page) ===== -->
+      <section id="viewDashboard">
+        <!-- Profile -->
+        <section class="card dash-card">
+          <h2 class="section-title" id="profileTitle">پروفایل من</h2>
+          <div class="profile-form">
+            <label class="field field-name">
+              <span class="field-label" id="nameLabel">نام</span>
+              <input type="text" class="text-input" id="dashNameInput" maxlength="30" autocomplete="name" />
+            </label>
+            <label class="field field-age">
+              <span class="field-label" id="ageLabel">سن</span>
+              <input type="number" class="text-input" id="ageInput" min="1" max="120" inputmode="numeric" />
+            </label>
+            <label class="field field-interests">
+              <span class="field-label" id="interestsLabel">علاقه‌مندی‌ها</span>
+              <input type="text" class="text-input" id="interestsInput" maxlength="120" />
+            </label>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" id="saveProfileBtn">ذخیره پروفایل</button>
+          </div>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <section class="card stat-card">
+            <h3 class="stat-title" id="moodTodayTitle">حال امروز</h3>
+            <div class="stat-body" id="moodTodayValue"></div>
+          </section>
+          <section class="card stat-card">
+            <h3 class="stat-title" id="notesTitle">یادداشت‌ها</h3>
+            <div class="stat-body" id="notesValue"></div>
+          </section>
+          <section class="card stat-card">
+            <h3 class="stat-title" id="tasksTitle">کارها</h3>
+            <div class="stat-body" id="tasksValue"></div>
+          </section>
+          <section class="card stat-card">
+            <h3 class="stat-title" id="avgTitle">میانگین حال</h3>
+            <div class="stat-body" id="avgValue"></div>
+          </section>
         </div>
 
-        <div class="weekday-row" id="weekdayRow"></div>
-        <div class="days-grid" id="daysGrid"></div>
+        <!-- Weekly report -->
+        <section class="card dash-card">
+          <h2 class="section-title" id="weeklyTitle">گزارش هفتگی</h2>
+          <div class="week-grid" id="weekGrid"></div>
+          <div class="week-summary" id="weekSummary"></div>
+        </section>
 
-        <div class="mood-legend" id="moodLegend"></div>
+        <!-- Backup / restore -->
+        <section class="card dash-card">
+          <h2 class="section-title" id="backupTitle">پشتیبان‌گیری و بازیابی</h2>
+          <p class="backup-desc" id="backupDesc"></p>
+          <div class="card-actions">
+            <button class="btn btn-ghost" id="exportBtn">پشتیبان‌گیری</button>
+            <button class="btn btn-ghost" id="importBtn">بازیابی</button>
+            <input type="file" id="importFileInput" accept="application/json,.json" hidden />
+          </div>
+        </section>
       </section>
     </main>
 
     <!-- ===== Footer ===== -->
     <footer class="app-footer">
       <a class="todo-btn" id="todoLink" href="todo.html">
-        <span class="todo-btn-icon" aria-hidden="true">✅</span>
-        <span class="todo-btn-label" id="todoLinkLabel">لیست کارها</span>
+        <span class="todo-btn-icon" aria-hidden="true">🥳</span>
+        <span class="todo-btn-label" id="todoLinkLabel">🥳تولدها </span>
       </a>
       <a
         class="github-btn"
@@ -139,6 +216,30 @@
         </svg>
       </a>
     </footer>
+
+    <!-- ===== Bottom Navigation Bar (mobile) ===== -->
+    <nav class="bottom-nav" aria-label="ناوبری اصلی">
+      <a class="nav-item" href="todo.html">
+        <span class="nav-ico" aria-hidden="true">🥳</span>
+        <span class="nav-label" id="navBirthdaysLabel">تولدها</span>
+      </a>
+      <button type="button" class="nav-item" data-view="dashboard">
+        <span class="nav-ico" aria-hidden="true">📊</span>
+        <span class="nav-label" id="navDashLabel">داشبورد</span>
+      </button>
+      <button type="button" class="nav-item" data-view="home">
+        <span class="nav-ico" aria-hidden="true">📅</span>
+        <span class="nav-label" id="navHomeLabel">خانه</span>
+      </button>
+      <button type="button" class="nav-item" data-view="year">
+        <span class="nav-ico" aria-hidden="true">🎯</span>
+        <span class="nav-label" id="navYearLabel">شمارنده</span>
+      </button>
+      <button type="button" class="nav-item" data-view="todo">
+        <span class="nav-ico" aria-hidden="true">✅</span>
+        <span class="nav-label" id="navTodoLabel">کارها</span>
+      </button>
+    </nav>
 
     <!-- ===== Day modal ===== -->
     <div class="modal-overlay hidden" id="modalOverlay">
@@ -180,45 +281,13 @@
     <script src="js/storage.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/calendar.js"></script>
+    <script src="js/streak.js"></script>
+    <script src="js/todo.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/yearcounter.js"></script>
+    <script src="js/views.js"></script>
     <script src="js/app.js"></script>
 
-    <!-- ===== PWA: register the service worker + update toast ===== -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("sw.js")
-            .then((reg) => {
-              reg.addEventListener("updatefound", () => {
-                var nw = reg.installing;
-                if (!nw) return;
-                nw.addEventListener("statechange", () => {
-                  /* Announce only when a NEW version takes over an
-                     already-controlled page (not on first install) */
-                  if (
-                    nw.state === "activated" &&
-                    navigator.serviceWorker.controller
-                  ) {
-                    showUpdateToast();
-                  }
-                });
-              });
-            })
-            .catch((err) =>
-              console.error("Service Worker registration failed:", err),
-            );
-        });
-      }
-
-      function showUpdateToast() {
-        var holder = document.getElementById("toastHolder");
-        if (!holder) return;
-        holder.innerHTML = "";
-        var box = document.createElement("div");
-        box.className = "toast-box";
-        box.textContent = "به‌روزرسانی جدید نصب شد ✨";
-        holder.appendChild(box);
-      }
-    </script>
+    <script src="js/pwa.js"></script>
   </body>
 </html>

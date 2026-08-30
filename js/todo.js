@@ -1,17 +1,20 @@
 /* ============================================
    TODO APP — js/todo.js
-   Persian-only to-do list page.
+   To-do list rendered inside index.html
+   (desktop right panel + mobile view).
    Storage key: "todoTracker.v1" (separate from
    the mood tracker data on purpose).
    Item shape: { id, text, done, fav, createdAt }
-   Features: add, delete, favorite (pinned top),
-   check done (moved to bottom).
+   Features: add, EDIT, delete, favorite
+   (pinned top), check done (moved to bottom).
+   All texts come from js/i18n.js (FA + EN).
    ============================================ */
 
 var TodoApp = (function () {
   "use strict";
 
   var KEY = "todoTracker.v1";
+  var editingId = null;
 
   function $(id) { return document.getElementById(id); }
 
@@ -66,7 +69,17 @@ var TodoApp = (function () {
     });
     save(data);
     render();
-    showToast("اضافه شد ✓");
+    showToast(I18N.t("todoAdded"));
+  }
+
+  function updateItem(id, text) {
+    var data = load();
+    data.items.forEach(function (it) {
+      if (it.id === id) it.text = text;
+    });
+    save(data);
+    render();
+    showToast(I18N.t("todoEdited"));
   }
 
   function removeItem(id) {
@@ -74,7 +87,7 @@ var TodoApp = (function () {
     data.items = data.items.filter(function (it) { return it.id !== id; });
     save(data);
     render();
-    showToast("حذف شد");
+    showToast(I18N.t("todoDeleted"));
   }
 
   function toggleDone(id) {
@@ -95,10 +108,40 @@ var TodoApp = (function () {
     render();
   }
 
+  /* ----- Edit helpers ----- */
+  function startEdit(id) {
+    editingId = id;
+    render();
+    var input = document.querySelector(".todo-edit-input");
+    if (input) { input.focus(); input.select(); }
+  }
+
+  function cancelEdit() {
+    if (editingId === null) return;
+    editingId = null;
+    render();
+  }
+
+  function saveEdit(id) {
+    var input = document.querySelector(".todo-edit-input");
+    if (!input) { editingId = null; render(); return; }
+    var text = input.value.trim();
+    if (!text) {
+      showToast(I18N.t("todoTextRequired"));
+      input.focus();
+      return;
+    }
+    editingId = null;
+    updateItem(id, text);
+  }
+
   /* ----- Render -----
      Order: active favorites first, then other active items,
      then done items at the bottom (done always wins over fav). */
   function render() {
+    var list = $("todoList");
+    if (!list) return;
+
     var data = load();
     var items = data.items.slice().sort(function (a, b) {
       if (a.done !== b.done) return a.done ? 1 : -1;
@@ -113,28 +156,46 @@ var TodoApp = (function () {
       var group = item.done ? "done" : item.fav ? "fav" : "active";
       if (group !== lastGroup) {
         if (group === "fav") {
-          html += '<li class="todo-divider"><span>⭐ مهم</span></li>';
+          html += '<li class="todo-divider"><span>' +
+            I18N.t("todoFavDivider") + "</span></li>";
         } else if (group === "done") {
-          html += '<li class="todo-divider"><span>انجام‌شده</span></li>';
+          html += '<li class="todo-divider"><span>' +
+            I18N.t("todoDoneDivider") + "</span></li>";
         }
         lastGroup = group;
       }
 
+      var isEditing = item.id === editingId;
       html += '<li class="todo-item' +
         (item.done ? " done" : "") + (item.fav ? " fav" : "") +
-        '" data-id="' + item.id + '">' +
-        '<button class="todo-check" data-action="toggle-done" ' +
-        'aria-label="انجام شد" aria-pressed="' + item.done + '">✓</button>' +
-        '<span class="todo-text">' + escapeHtml(item.text) + "</span>" +
-        '<button class="todo-fav" data-action="toggle-fav" ' +
-        'aria-label="مهم" aria-pressed="' + item.fav + '">' +
-        (item.fav ? "★" : "☆") + "</button>" +
-        '<button class="todo-del" data-action="remove" ' +
-        'aria-label="حذف">✕</button>' +
-        "</li>";
+        (isEditing ? " editing" : "") +
+        '" data-id="' + item.id + '">';
+
+      if (isEditing) {
+        /* Inline edit mode: text becomes an input */
+        html += '<input type="text" class="todo-edit-input" maxlength="200"' +
+          ' value="' + escapeHtml(item.text) + '" />' +
+          '<button class="todo-edit-save" data-action="save-edit" ' +
+          'aria-label="save">✓</button>' +
+          '<button class="todo-edit-cancel" data-action="cancel-edit" ' +
+          'aria-label="cancel">✕</button>';
+      } else {
+        html += '<button class="todo-check" data-action="toggle-done" ' +
+          'aria-label="done" aria-pressed="' + item.done + '">✓</button>' +
+          '<span class="todo-text">' + escapeHtml(item.text) + "</span>" +
+          '<button class="todo-fav" data-action="toggle-fav" ' +
+          'aria-label="favorite" aria-pressed="' + item.fav + '">' +
+          (item.fav ? "★" : "☆") + "</button>" +
+          '<button class="todo-edit" data-action="edit" ' +
+          'aria-label="edit">✏️</button>' +
+          '<button class="todo-del" data-action="remove" ' +
+          'aria-label="delete">✕</button>';
+      }
+
+      html += "</li>";
     });
 
-    $("todoList").innerHTML = html;
+    list.innerHTML = html;
 
     var empty = $("todoEmpty");
     if (items.length === 0) {
@@ -145,18 +206,21 @@ var TodoApp = (function () {
 
     var remaining = items.filter(function (it) { return !it.done; }).length;
     $("todoCount").textContent = items.length === 0 ? "" :
-      I18N.formatNumber(remaining) + " کار باقی مانده از " +
-      I18N.formatNumber(items.length);
+      I18N.f("todoLeft",
+        I18N.formatNumber(remaining), I18N.formatNumber(items.length));
   }
 
   /* ----- Events ----- */
   function wireEvents() {
-    $("todoAddForm").addEventListener("submit", function (e) {
+    var form = $("todoAddForm");
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
       var input = $("todoInput");
       var text = input.value.trim();
       if (!text) {
-        showToast("اول متن کار را بنویس");
+        showToast(I18N.t("todoWriteFirst"));
         input.focus();
         return;
       }
@@ -175,22 +239,37 @@ var TodoApp = (function () {
 
       if (action === "toggle-done") toggleDone(id);
       else if (action === "toggle-fav") toggleFav(id);
+      else if (action === "edit") startEdit(id);
+      else if (action === "save-edit") saveEdit(id);
+      else if (action === "cancel-edit") cancelEdit();
       else if (action === "remove") {
-        if (window.confirm("این کار حذف شود؟")) removeItem(id);
+        if (window.confirm(I18N.t("todoConfirmDelete"))) removeItem(id);
+      }
+    });
+
+    /* While editing: Enter saves, Escape cancels */
+    $("todoList").addEventListener("keydown", function (e) {
+      var input = e.target.closest(".todo-edit-input");
+      if (!input) return;
+      var li = input.closest(".todo-item");
+      if (e.key === "Enter") {
+        e.preventDefault();
+        saveEdit(li.getAttribute("data-id"));
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        cancelEdit();
       }
     });
   }
 
   /* ----- Init ----- */
   function init() {
-    I18N.setLang("fa"); // Persian-only page
-    document.title = "لیست کارها";
-    ThemeManager.init();
+    if (!$("todoList")) return; // not on this page
     wireEvents();
     render();
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { render: render };
+  return { render: render, refresh: render };
 })();

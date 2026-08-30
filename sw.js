@@ -4,11 +4,22 @@
    (a single refresh always gets the newest code),
    cache fallback for offline use, cache-first
    only for cross-origin fonts.
-   Bump CACHE_VERSION whenever you ship changes —
-   the old cache is deleted on activate.
-   ============================================ */
 
-const CACHE_VERSION = 'v5';
+   ===== MAINTENANCE GUIDE (no build tools here) =====
+   1. ADDED A NEW FILE?  Add it to PRECACHE_URLS below
+      so it is available offline even on the very first
+      visit. (Every same-origin response is ALSO cached
+      at runtime, so forgetting the list only affects
+      users who go offline before ever loading the file.)
+   2. SHIPPING AN UPDATE?  Bump CACHE_VERSION. Because
+      fetching is network-first, users get fresh code
+      when online even WITHOUT a bump; the bump only
+      purges the old offline cache on activate.
+   3. Analytics, SW registration and the update toast
+      live in js/pwa.js — one shared copy for all pages.
+   ==================================================== */
+
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
 
 /* Core assets cached on install (app shell).
@@ -16,7 +27,11 @@ const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
    so the app also works when hosted in a subfolder. */
 const PRECACHE_URLS = [
   './',
+  // --- pages ---
   'index.html',
+  'todo.html', // Birthdays page (repurposed former to-do page)
+  'dashboard.html', // thin redirect to index.html#dashboard
+  // --- shared ---
   'manifest.json',
   'css/variables.css',
   'css/base.css',
@@ -27,11 +42,23 @@ const PRECACHE_URLS = [
   'js/i18n.js',
   'js/storage.js',
   'js/theme.js',
+  'js/theme-init.js',
+  'js/streak.js',
+  'js/pwa.js',
+  // --- main page (calendar + year counter + todo panel + views) ---
   'js/calendar.js',
   'js/app.js',
-  'todo.html',
-  'css/todo.css',
   'js/todo.js',
+  'js/dashboard.js',
+  'js/yearcounter.js',
+  'js/views.js',
+  'css/home.css',
+  'css/todo.css',
+  'css/dashboard.css',
+  // --- birthdays page ---
+  'js/birthdays.js',
+  'css/birthdays.css',
+  // --- icons ---
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',

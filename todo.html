@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لیست کارها</title>
+    <title>تولدها 🥳</title>
 
     <!-- ===== PWA ===== -->
     <link rel="manifest" href="manifest.json" />
@@ -14,7 +14,7 @@
     <!-- iOS: install as standalone app -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="لیست کارها" />
+    <meta name="apple-mobile-web-app-title" content="تولدها" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 
     <!-- Generic favicon (reuses the PWA icon) -->
@@ -33,53 +33,23 @@
       rel="stylesheet"
     />
 
-    <!-- Styles: order matters (variables first) -->
-    <!-- Apply saved/auto theme before first paint (no flash) -->
-    <script>
-      (function () {
-        var theme = "light";
-        try {
-          var data = JSON.parse(localStorage.getItem("moodTracker.v1") || "{}");
-          var mode = data && data.settings && data.settings.theme;
-          if (mode === "light" || mode === "dark") {
-            theme = mode;
-          } else {
-            var h = new Date().getHours();
-            theme = h >= 6 && h < 18 ? "light" : "dark"; // sunset estimate
-          }
-        } catch (e) {
-          /* keep light */
-        }
-        document.documentElement.setAttribute("data-theme", theme);
-      })();
-    </script>
+    <!-- Styles: order matters (variables first).
+         Analytics lives in js/pwa.js (single copy). -->
+    <script src="js/theme-init.js"></script>
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/components.css" />
-    <link rel="stylesheet" href="css/todo.css" />
+    <link rel="stylesheet" href="css/birthdays.css" />
+    <link rel="stylesheet" href="css/home.css" />
 
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-CWVQMFX1BG"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-CWVQMFX1BG");
-    </script>
   </head>
-  <body>
+  <body class="bday-page">
     <!-- ===== Header ===== -->
     <header class="app-header">
       <div class="header-inner">
         <a class="btn btn-ghost back-btn" href="index.html">→ بازگشت</a>
-        <h1 class="app-title">لیست کارها</h1>
+        <h1 class="app-title">تولدها رو فراموش نکن 🥳🥳</h1>
         <div class="header-actions">
           <button class="btn btn-ghost icon-btn" id="themeToggle">🌓</button>
         </div>
@@ -88,78 +58,73 @@
 
     <!-- ===== Main ===== -->
     <main class="container">
-      <section class="card todo-card">
-        <form class="todo-add-form" id="todoAddForm">
+      <section class="card bday-card">
+        <form class="bday-add-form" id="bdayAddForm">
           <input
             type="text"
-            class="todo-input"
-            id="todoInput"
-            maxlength="200"
-            placeholder="یک کار جدید بنویس..."
+            class="bday-input"
+            id="bdayName"
+            maxlength="40"
+            placeholder="اسم شخص..."
             autocomplete="off"
           />
-          <button type="submit" class="btn btn-primary todo-add-btn">
+          <div class="bday-date-row">
+            <select class="bday-select" id="bdayDay" aria-label="روز"></select>
+            <select class="bday-select" id="bdayMonth" aria-label="ماه"></select>
+            <select class="bday-select" id="bdayYear" aria-label="سال"></select>
+          </div>
+          <button type="submit" class="btn btn-primary bday-add-btn" id="bdayAddBtn">
             ＋ افزودن
           </button>
         </form>
 
-        <p class="todo-count" id="todoCount"></p>
+        <p class="bday-preview" id="bdayPreview"></p>
 
-        <ul class="todo-list" id="todoList"></ul>
+        <p class="bday-count" id="bdayCount"></p>
 
-        <div class="todo-empty hidden" id="todoEmpty">
-          <span class="todo-empty-emoji" aria-hidden="true">🗒️</span>
-          <p>هنوز کاری اضافه نشده.<br />اولین کارت رو بنویس!</p>
+        <div class="bday-list" id="bdayList"></div>
+
+        <div class="bday-empty hidden" id="bdayEmpty">
+          <span class="bday-empty-emoji" aria-hidden="true">🎂</span>
+          <p>هنوز تولدی اضافه نشده.<br />اولین تولد رو اضافه کن!</p>
         </div>
       </section>
     </main>
+
+    <!-- ===== Bottom Navigation Bar (mobile only) ===== -->
+    <nav class="bottom-nav" aria-label="ناوبری اصلی">
+      <a class="nav-item active" href="todo.html" aria-current="page">
+        <span class="nav-ico" aria-hidden="true">🥳</span>
+        <span class="nav-label">تولدها</span>
+      </a>
+      <a class="nav-item" href="index.html#dashboard">
+        <span class="nav-ico" aria-hidden="true">📊</span>
+        <span class="nav-label">داشبورد</span>
+      </a>
+      <a class="nav-item" href="index.html#home">
+        <span class="nav-ico" aria-hidden="true">📅</span>
+        <span class="nav-label">خانه</span>
+      </a>
+      <a class="nav-item" href="index.html#year">
+        <span class="nav-ico" aria-hidden="true">🎯</span>
+        <span class="nav-label">شمارنده</span>
+      </a>
+      <a class="nav-item" href="index.html#todo">
+        <span class="nav-ico" aria-hidden="true">✅</span>
+        <span class="nav-label">کارها</span>
+      </a>
+    </nav>
 
     <!-- ===== Toast holder ===== -->
     <div class="toast-holder" id="toastHolder"></div>
 
     <!-- Scripts: order matters -->
+    <script src="js/jalali.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/theme.js"></script>
-    <script src="js/todo.js"></script>
+    <script src="js/birthdays.js"></script>
 
-    <!-- ===== PWA: register the service worker + update toast ===== -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("sw.js")
-            .then((reg) => {
-              reg.addEventListener("updatefound", () => {
-                var nw = reg.installing;
-                if (!nw) return;
-                nw.addEventListener("statechange", () => {
-                  /* Announce only when a NEW version takes over an
-                     already-controlled page (not on first install) */
-                  if (
-                    nw.state === "activated" &&
-                    navigator.serviceWorker.controller
-                  ) {
-                    showUpdateToast();
-                  }
-                });
-              });
-            })
-            .catch((err) =>
-              console.error("Service Worker registration failed:", err),
-            );
-        });
-      }
-
-      function showUpdateToast() {
-        var holder = document.getElementById("toastHolder");
-        if (!holder) return;
-        holder.innerHTML = "";
-        var box = document.createElement("div");
-        box.className = "toast-box";
-        box.textContent = "به‌روزرسانی جدید نصب شد ✨";
-        holder.appendChild(box);
-      }
-    </script>
+    <script src="js/pwa.js"></script>
   </body>
 </html>

@@ -12,6 +12,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+  flex-shrink: 0; /* buttons never get squeezed on small screens */
   padding: 9px 16px;
   border-radius: 999px;
   font-weight: 600;
@@ -520,5 +521,40 @@
   .nav-btn {
     width: 34px;
     height: 34px;
+  }
+}
+
+/* ----- Streak badge (header) -----
+   Daily-visit counter; a passive badge (not a button). */
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.streak-flame {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+@media (max-width: 540px) {
+  .streak-badge {
+    padding: 6px 9px;
+    font-size: 0.68rem;
+  }
+
+  .streak-flame {
+    font-size: 0.85rem;
   }
 }

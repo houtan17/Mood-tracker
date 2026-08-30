@@ -1,7 +1,7 @@
 /* ============================================
    APP
    Initialization, modal, language switching,
-   export/import, toast messages, user name +
+   dashboard button, streak, toast messages, user name +
    time-based greeting, day-edit restrictions.
    ============================================ */
 
@@ -46,8 +46,7 @@ var App = (function () {
     $("appTitle").textContent = I18N.t("title");
     $("langToggle").textContent = I18N.t("langSwitchLabel");
     $("todayBtn").textContent = I18N.t("today");
-    $("exportBtn").textContent = I18N.t("exportBtn");
-    $("importBtn").textContent = I18N.t("importBtn");
+    $("dashboardBtn").textContent = I18N.t("dashboard");
     $("saveEntryBtn").textContent = I18N.t("save");
     $("deleteEntryBtn").textContent = I18N.t("remove");
     $("noteInput").placeholder = I18N.t("notePlaceholder");
@@ -56,9 +55,27 @@ var App = (function () {
     $("cancelNameBtn").textContent = I18N.t("cancel");
     $("githubLink").title = I18N.t("githubLabel");
     $("githubLink").setAttribute("aria-label", I18N.t("githubLabel"));
-    $("todoLinkLabel").textContent = I18N.t("todoList");
-    $("todoLink").title = I18N.t("todoList");
-    $("todoLink").setAttribute("aria-label", I18N.t("todoList"));
+
+    /* Footer button: now opens the Birthdays page */
+    $("todoLinkLabel").textContent = I18N.t("birthdays");
+    $("todoLink").title = I18N.t("birthdays");
+    $("todoLink").setAttribute("aria-label", I18N.t("birthdays"));
+
+    /* To-do side panel */
+    $("todoPanelTitle").textContent = I18N.t("todoList");
+    $("todoAddBtn").textContent = I18N.t("todoAddBtn");
+    $("todoInput").placeholder = I18N.t("todoAddPlaceholder");
+    $("todoEmpty").innerHTML =
+      '<span class="todo-empty-emoji" aria-hidden="true">🗒️</span><p>' +
+      I18N.t("todoEmptyText") + "</p>";
+
+    /* Bottom navigation labels (mobile) */
+    $("navBirthdaysLabel").textContent = I18N.t("birthdays");
+    $("navDashLabel").textContent = I18N.t("dashboard");
+    $("navHomeLabel").textContent = I18N.t("navHome");
+    $("navYearLabel").textContent = I18N.t("navYear");
+    $("navTodoLabel").textContent = I18N.t("navTodo");
+
     setChevrons();
     renderGreeting();
   }
@@ -67,7 +84,13 @@ var App = (function () {
     applyTexts();
     renderLegend();
     Calendar.render();
+    TodoApp.render();
+    YearCounter.render();
     ThemeManager.refresh();
+    Streak.refresh();
+    if (document.body.getAttribute("data-view") === "dashboard") {
+      Dashboard.refresh();
+    }
   }
 
   /* ----- Greeting (time of day + stored name) ----- */
@@ -192,6 +215,14 @@ var App = (function () {
     $("nextMonthBtn").addEventListener("click", function () { Calendar.next(); });
     $("todayBtn").addEventListener("click", function () { Calendar.goToday(); });
 
+    /* Dashboard toggles the embedded dashboard view
+       (instead of navigating to a separate page) */
+    $("dashboardBtn").addEventListener("click", function (e) {
+      e.preventDefault();
+      var cur = document.body.getAttribute("data-view");
+      Views.show(cur === "dashboard" ? "home" : "dashboard");
+    });
+
     $("closeModalBtn").addEventListener("click", closeModal);
     $("modalOverlay").addEventListener("click", function (e) {
       if (e.target === this) closeModal();
@@ -222,28 +253,6 @@ var App = (function () {
       Storage.removeEntry(selectedDate.jy, selectedDate.jm, selectedDate.jd);
       closeModal();
       showToast(I18N.t("deletedMsg"));
-    });
-
-    $("exportBtn").addEventListener("click", function () {
-      Storage.exportToFile();
-    });
-
-    $("importFileInput").addEventListener("change", function () {
-      var file = this.files[0];
-      this.value = "";
-      if (!file) return;
-      Storage.importFromFile(file, function (err) {
-        if (err) {
-          showToast(I18N.t("importErrorMsg"));
-        } else {
-          Calendar.goToday();
-          showToast(I18N.t("importedMsg"));
-        }
-      });
-    });
-
-    $("importBtn").addEventListener("click", function () {
-      $("importFileInput").click();
     });
 
     $("langToggle").addEventListener("click", function () {
@@ -278,6 +287,7 @@ var App = (function () {
     Calendar.init(openModal);
 
     ThemeManager.init();
+    Streak.init();
     applyAll();
 
     startTimers();

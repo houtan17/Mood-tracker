@@ -162,6 +162,41 @@
   fill: currentColor;
 }
 
+/* Mobile: two-row header — full-width centered title on top,
+   greeting + actions below; nothing overlaps or gets clipped
+   (works for long titles on every page) */
+@media (max-width: 540px) {
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 6px;
+  }
+
+  .app-title {
+    order: -1;
+    flex: 1 1 100%;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .greet-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Compact back button on every page's header */
+  .header-inner .back-btn {
+    flex: 0 0 auto;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+  }
+}
+
 /* ----- Calendar section ----- */
 .calendar-header {
   display: flex;

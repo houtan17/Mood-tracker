@@ -48,6 +48,9 @@ var Storage = (function () {
     save: save,
     dateKey: dateKey,
 
+    /* All entries keyed by Jalali date (read-only view) */
+    entries: function () { return load().entries; },
+
     getEntry: function (jy, jm, jd) {
       return load().entries[dateKey(jy, jm, jd)] || null;
     },

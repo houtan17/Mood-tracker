@@ -1,0 +1,330 @@
+/* ============================================
+   DASHBOARD PAGE STYLES (css/dashboard.css)
+   Uses the shared theme tokens from
+   css/variables.css — light + dark both work.
+   ============================================ */
+
+.dashboard-container {
+  max-width: 640px;
+}
+
+.dash-card {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1rem;
+  margin-bottom: 14px;
+}
+
+/* ----- Back button (header) ----- */
+.back-btn {
+  justify-self: start;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ----- Profile form ----- */
+.profile-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field-name {
+  flex: 1 1 150px;
+}
+
+.field-age {
+  flex: 0 1 110px;
+}
+
+.field-interests {
+  flex: 1 1 100%;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.text-input {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.text-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* Hide number-input spinners (cleaner on mobile) */
+.text-input::-webkit-outer-spin-button,
+.text-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.text-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.card-actions .btn {
+  flex-shrink: 0; /* buttons never shrink */
+}
+
+/* ----- Stats grid ----- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  margin-bottom: 0;
+  padding: 16px;
+}
+
+.stat-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  min-height: 64px;
+}
+
+.stat-emoji {
+  font-size: 2.3rem;
+  line-height: 1.15;
+}
+
+.stat-emoji-empty {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.stat-big {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.stat-caption {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ----- Task progress bar ----- */
+.progress {
+  width: 100%;
+  max-width: 180px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  transition: width 0.4s ease;
+}
+
+/* ----- Weekly report: 7-day mood chart ----- */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.week-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 88px;
+  padding: 8px 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  contain: content;
+}
+
+.week-cell.mood-bg-1 { background: var(--mood-1-bg); border-color: transparent; }
+.week-cell.mood-bg-2 { background: var(--mood-2-bg); border-color: transparent; }
+.week-cell.mood-bg-3 { background: var(--mood-3-bg); border-color: transparent; }
+.week-cell.mood-bg-4 { background: var(--mood-4-bg); border-color: transparent; }
+.week-cell.mood-bg-5 { background: var(--mood-5-bg); border-color: transparent; }
+
+.week-day {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.week-emoji {
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.week-emoji-future {
+  color: var(--text-muted);
+}
+
+.week-num {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Placeholder dot for days without an entry */
+.week-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--border);
+  margin: 10px 0;
+}
+
+/* Today: highlighted ring */
+.week-cell.is-today {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft), var(--shadow);
+}
+
+/* Days after today in the current week */
+.week-cell.is-future {
+  opacity: 0.45;
+}
+
+.week-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.week-msg-muted {
+  color: var(--text-muted);
+}
+
+/* ----- Backup / restore ----- */
+.backup-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* ----- Mobile -----
+   Cards stack/wrap gracefully; buttons keep their size
+   (flex-shrink: 0) and stretch to fill rows instead. */
+@media (max-width: 540px) {
+  .dashboard-container {
+    padding: 14px 10px;
+  }
+
+  .dash-card {
+    padding: 13px;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-actions .btn {
+    flex: 1 0 auto; /* stretch to fill, never shrink */
+  }
+
+  .profile-form {
+    gap: 10px;
+  }
+
+  .field-age {
+    flex: 1 1 100px;
+  }
+
+  .stats-grid {
+    gap: 8px;
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
+
+  .stat-emoji {
+    font-size: 2rem;
+  }
+
+  .stat-big {
+    font-size: 1.6rem;
+  }
+
+  .week-grid {
+    gap: 4px;
+  }
+
+  .week-cell {
+    min-height: 72px;
+    padding: 6px 1px;
+    border-radius: 9px;
+  }
+
+  .week-emoji {
+    font-size: 1.25rem;
+  }
+
+  .week-day {
+    font-size: 0.62rem;
+  }
+
+  .week-num {
+    font-size: 0.6rem;
+  }
+}
+
+/* Very narrow phones: stats stack in a single column */
+@media (max-width: 380px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-body {
+    min-height: 0;
+  }
+}

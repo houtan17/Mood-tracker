@@ -45,7 +45,63 @@ var I18N = (function () {
       themeAuto: "خودکار",
       themeToggleTitle: "تغییر پوسته",
       todoList: "لیست کارها",
-      githubLabel: "گیت‌هاب — سورس پروژه"
+      githubLabel: "گیت‌هاب — سورس پروژه",
+
+      /* ----- Year counter panel ----- */
+      yearCounter: "شمارنده سال",
+      daysPassed: "{0} روز گذشته",
+      daysLeft: "{0} روز باقی مانده",
+
+      /* ----- To-do panel (side panel / mobile view) ----- */
+      todoAddPlaceholder: "یک کار جدید بنویس...",
+      todoAddBtn: "＋ افزودن",
+      todoLeft: "{0} کار باقی مانده از {1}",
+      todoFavDivider: "⭐ مهم",
+      todoDoneDivider: "انجام‌شده",
+      todoEmptyText: "هنوز کاری اضافه نشده.",
+      todoWriteFirst: "اول متن کار را بنویس",
+      todoAdded: "اضافه شد ✓",
+      todoDeleted: "حذف شد",
+      todoConfirmDelete: "این کار حذف شود؟",
+      todoEdited: "ویرایش شد ✓",
+      todoTextRequired: "متن کار خالی است",
+
+      /* ----- Bottom navigation (mobile) ----- */
+      birthdays: "تولدها",
+      navHome: "خانه",
+      navYear: "شمارنده",
+      navTodo: "کارها",
+
+      /* ----- Dashboard ----- */
+      dashboard: "داشبورد",
+      back: "بازگشت",
+      streakLabel: "روز پیوسته",
+      streakTitle: "روزهای پیوسته بازدید",
+      moodToday: "حال امروز",
+      moodTodayEmpty: "برای امروز هنوز حالی ثبت نکردی",
+      notesCount: "یادداشت‌ها",
+      tasksTitle: "کارها",
+      tasksDone: "{0}٪ از کارهات انجام شده",
+      tasksEmpty: "هنوز کاری ثبت نکردی",
+      avgMood: "میانگین حال ۳۰ روز اخیر",
+      outOf10: "از ۱۰",
+      weeklyReport: "گزارش هفتگی",
+      weeklyAvg: "میانگین هفته: {0} از ۱۰",
+      weeklyDays: "{0} روز از ۷ روز هفته ثبت شده",
+      weeklyEmpty: "این هفته هنوز حالی ثبت نشده",
+      noData: "هنوز داده‌ای ثبت نشده",
+      profileTitle: "پروفایل من",
+      nameLabel: "نام",
+      ageLabel: "سن",
+      interestsLabel: "علاقه‌مندی‌ها",
+      agePlaceholder: "مثلاً ۲۵",
+      interestsPlaceholder: "مثلاً موسیقی، ورزش، کتاب خواندن",
+      saveProfile: "ذخیره پروفایل",
+      profileSaved: "پروفایل ذخیره شد ✓",
+      ageInvalidMsg: "سن باید عددی بین ۱ تا ۱۲۰ باشد",
+      backupTitle: "پشتیبان‌گیری و بازیابی",
+      backupDesc: "از اطلاعات‌ات نسخه پشتیبان بگیر یا فایل پشتیبان قبلی را بازیابی کن.",
+      updateInstalled: "به‌روزرسانی جدید نصب شد ✨"
     },
 
     en: {
@@ -84,7 +140,63 @@ var I18N = (function () {
       themeAuto: "Auto",
       themeToggleTitle: "Change theme",
       todoList: "To-Do List",
-      githubLabel: "GitHub — project source"
+      githubLabel: "GitHub — project source",
+
+      /* ----- Year counter panel ----- */
+      yearCounter: "Year Counter",
+      daysPassed: "{0} days passed",
+      daysLeft: "{0} days left",
+
+      /* ----- To-do panel (side panel / mobile view) ----- */
+      todoAddPlaceholder: "Write a new task...",
+      todoAddBtn: "＋ Add",
+      todoLeft: "{0} tasks left out of {1}",
+      todoFavDivider: "⭐ Important",
+      todoDoneDivider: "Done",
+      todoEmptyText: "Nothing added yet.",
+      todoWriteFirst: "Write the task text first",
+      todoAdded: "Added ✓",
+      todoDeleted: "Deleted",
+      todoConfirmDelete: "Delete this task?",
+      todoEdited: "Saved ✓",
+      todoTextRequired: "Task text is empty",
+
+      /* ----- Bottom navigation (mobile) ----- */
+      birthdays: "Birthdays",
+      navHome: "Home",
+      navYear: "Counter",
+      navTodo: "Tasks",
+
+      /* ----- Dashboard ----- */
+      dashboard: "Dashboard",
+      back: "Back",
+      streakLabel: "day streak",
+      streakTitle: "Daily visit streak",
+      moodToday: "Your mood today",
+      moodTodayEmpty: "No mood recorded for today",
+      notesCount: "Notes",
+      tasksTitle: "Tasks",
+      tasksDone: "{0}% of your tasks are done",
+      tasksEmpty: "No tasks yet",
+      avgMood: "Average mood (last 30 days)",
+      outOf10: "out of 10",
+      weeklyReport: "Weekly Report",
+      weeklyAvg: "Week average: {0} out of 10",
+      weeklyDays: "{0} of 7 days recorded",
+      weeklyEmpty: "No moods recorded this week yet",
+      noData: "No data recorded yet",
+      profileTitle: "My Profile",
+      nameLabel: "Name",
+      ageLabel: "Age",
+      interestsLabel: "Interests",
+      agePlaceholder: "e.g. 25",
+      interestsPlaceholder: "e.g. music, sports, reading",
+      saveProfile: "Save profile",
+      profileSaved: "Profile saved ✓",
+      ageInvalidMsg: "Age must be a whole number between 1 and 120",
+      backupTitle: "Backup & Restore",
+      backupDesc: "Download a backup of your data or restore a previous backup file.",
+      updateInstalled: "New version installed ✨"
     }
   };
 
@@ -103,6 +215,16 @@ var I18N = (function () {
 
     t: function (key) {
       return LANGS[currentLang][key];
+    },
+
+    /* t() with {0}, {1}, ... placeholders */
+    f: function (key) {
+      var s = LANGS[currentLang][key];
+      if (typeof s !== "string") return "";
+      for (var i = 1; i < arguments.length; i += 1) {
+        s = s.split("{" + (i - 1) + "}").join(String(arguments[i]));
+      }
+      return s;
     },
 
     formatNumber: formatNumber,
