@@ -19,7 +19,7 @@
       live in js/pwa.js — one shared copy for all pages.
    ==================================================== */
 
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
 
 /* Core assets cached on install (app shell).
@@ -29,7 +29,7 @@ const PRECACHE_URLS = [
   './',
   // --- pages ---
   'index.html',
-  'todo.html', // Birthdays page (repurposed former to-do page)
+  'todo.html', // thin redirect to index.html#birthdays (old links)
   'dashboard.html', // thin redirect to index.html#dashboard
   // --- shared ---
   'manifest.json',

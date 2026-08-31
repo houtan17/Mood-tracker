@@ -1,7 +1,8 @@
 /* ============================================
    VIEWS — js/views.js
-   Mobile bottom-nav view switching for index.html.
-   Views: home (calendar) / year / todo / dashboard.
+   Bottom-nav view switching for index.html (mobile).
+   Views: home (calendar) / year / todo / dashboard /
+   birthdays.
    The active view is stored on <body data-view="...">
    so pure CSS decides what is visible — no layout
    thrash, and desktop (side panels) ignores it.
@@ -12,7 +13,7 @@
 var Views = (function () {
   "use strict";
 
-  var VIEWS = ["home", "year", "todo", "dashboard"];
+  var VIEWS = ["home", "year", "todo", "dashboard", "birthdays"];
 
   function active() {
     return document.body.getAttribute("data-view") || "home";
@@ -28,9 +29,12 @@ var Views = (function () {
 
   function sync() {
     updateNav();
-    /* Dashboard stats refresh every time the view opens */
+    /* Views with live data refresh every time they open */
     if (active() === "dashboard" && window.Dashboard && Dashboard.show) {
       Dashboard.show();
+    }
+    if (active() === "birthdays" && window.Birthdays && Birthdays.render) {
+      Birthdays.render();
     }
   }
 
@@ -53,14 +57,15 @@ var Views = (function () {
   window.addEventListener("hashchange", function () {
     document.body.setAttribute("data-view", hashName());
     sync();
+    window.scrollTo(0, 0); // browser back/forward behaves like show()
   });
 
   document.addEventListener("DOMContentLoaded", function () {
     document.body.setAttribute("data-view", hashName());
     updateNav();
 
-    /* Wire the bottom-nav buttons (the Birthdays item is a
-       plain link, so it needs no handler) */
+    /* Wire the bottom-nav buttons (all five items are
+       view switchers now) */
     var btns = document.querySelectorAll(".bottom-nav .nav-item[data-view]");
     Array.prototype.forEach.call(btns, function (el) {
       el.addEventListener("click", function () {

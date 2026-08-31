@@ -47,6 +47,10 @@ var App = (function () {
     $("langToggle").textContent = I18N.t("langSwitchLabel");
     $("todayBtn").textContent = I18N.t("today");
     $("dashboardBtn").textContent = I18N.t("dashboard");
+    $("dashBackBtn").textContent =
+      (I18N.t("dir") === "rtl" ? "\u2192" : "\u2190") + " " + I18N.t("back");
+    $("bdayBackBtn").textContent =
+      (I18N.t("dir") === "rtl" ? "\u2192" : "\u2190") + " " + I18N.t("back");
     $("saveEntryBtn").textContent = I18N.t("save");
     $("deleteEntryBtn").textContent = I18N.t("remove");
     $("noteInput").placeholder = I18N.t("notePlaceholder");
@@ -86,6 +90,7 @@ var App = (function () {
     Calendar.render();
     TodoApp.render();
     YearCounter.render();
+    if (window.Birthdays && Birthdays.refresh) Birthdays.refresh();
     ThemeManager.refresh();
     Streak.refresh();
     if (document.body.getAttribute("data-view") === "dashboard") {
@@ -221,6 +226,22 @@ var App = (function () {
       e.preventDefault();
       var cur = document.body.getAttribute("data-view");
       Views.show(cur === "dashboard" ? "home" : "dashboard");
+    });
+
+    /* Dashboard view back button (desktop) */
+    $("dashBackBtn").addEventListener("click", function () {
+      Views.show("home");
+    });
+
+    /* Birthdays view back button (desktop) */
+    $("bdayBackBtn").addEventListener("click", function () {
+      Views.show("home");
+    });
+
+    /* Footer Birthdays button opens the embedded birthdays
+       view (instead of navigating to the old separate page) */
+    $("todoLink").addEventListener("click", function () {
+      Views.show("birthdays");
     });
 
     $("closeModalBtn").addEventListener("click", closeModal);

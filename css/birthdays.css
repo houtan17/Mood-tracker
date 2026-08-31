@@ -1,17 +1,14 @@
 /* ============================================
-   BIRTHDAYS PAGE STYLES (css/birthdays.css)
-   The former to-do page, repurposed.
+   BIRTHDAYS VIEW STYLES (css/birthdays.css)
+   Embedded Birthdays view inside index.html.
    Uses the shared theme tokens from
    css/variables.css — light + dark both work.
    ============================================ */
 
-/* ----- Back button (header) — compact on every size ----- */
-.back-btn {
-  justify-self: start;
-  flex: 0 0 auto;
-  white-space: nowrap;
-  padding: 6px 12px;
-  font-size: 0.78rem;
+/* ----- Back button (top of the birthdays view) ----- */
+.bday-topbar {
+  display: flex;
+  margin-bottom: 12px;
 }
 
 /* ----- Card ----- */

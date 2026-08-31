@@ -17,9 +17,13 @@
   margin-bottom: 14px;
 }
 
-/* ----- Back button (header) ----- */
+/* ----- Back button (top of the dashboard view) ----- */
+.dash-topbar {
+  display: flex;
+  margin-bottom: 12px;
+}
+
 .back-btn {
-  justify-self: start;
   flex-shrink: 0;
   white-space: nowrap;
 }

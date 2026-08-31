@@ -19,15 +19,16 @@ from Google Fonts when online, and falls back to system fonts offline).
   (starts Nowruz, 366 in leap years); passed days turn blue;
   footer shows days passed / days left
 - To-Do panel: add / edit / delete / favorite / check-off
-- Birthdays page (`todo.html`, opened from the 🥳 footer button):
+- Birthdays view (embedded in index.html like the other views;
+  opened from the footer button or the 🎂 bottom-nav item):
   add name + birth date (Jalali/Shamsi day · month · year dropdowns,
   stored as the equivalent Gregorian date), cards show name, Jalali
   date, and days remaining
-- Mobile (≤540px): fixed bottom Navigation Bar with 5 sections —
-  Birthdays (link), Dashboard, Home, Year Counter, To-Do (views
-  switched inside index.html, hash-routed, back-button friendly).
-  The Birthdays page gets the same bottom Navigation Bar on mobile
-  (it replaces the header back button there)
+- Mobile (≤540px): floating rounded bottom Navigation Bar with
+  5 sections — Birthdays, Dashboard, Home, Year Counter, To-Do
+  (all views switched inside index.html, hash-routed,
+  back-button friendly); modern stroke SVG icons inherit the
+  active-tab color
 - Dashboard is an embedded view of index.html now
   (`dashboard.html` redirects to `index.html#dashboard`)
 - Click any day → pick 1 of 5 emoji moods + write an optional note → Save
@@ -38,7 +39,8 @@ from Google Fonts when online, and falls back to system fonts offline).
 - Light / Dark / Auto themes (Auto switches around sunset ~18:00);
   toggle button in the header
 - Persian / English interface toggle (also flips RTL/LTR)
-- Dashboard page (`dashboard.html`, opened from the header button):
+- Dashboard view (opened from the header button; includes a
+  desktop back button — mobile uses the bottom nav):
   profile (name / age / interests), mood of today, notes count,
   % of tasks done, 30-day average mood (out of 10), a Weekly Report
   mood chart (Saturday → Friday), and Backup/Restore
@@ -54,8 +56,8 @@ from Google Fonts when online, and falls back to system fonts offline).
 index.html            Main page: 3-column home (year counter | calendar |
                       to-do panel), embedded dashboard view, mobile views,
                       bottom navigation bar; loads all CSS/JS
-todo.html             Birthdays page (repurposed former to-do page; Persian
-                      only, same theme system)
+todo.html             Thin redirect → index.html#birthdays (old links keep
+                      working)
 dashboard.html        Thin redirect → index.html#dashboard (old links keep
                       working)
 css/
@@ -83,7 +85,8 @@ js/
   dashboard.js        Dashboard view logic (profile, stats, weekly report, backup)
   yearcounter.js      Year Counter panel logic (Jalali day dots + stats)
   views.js            Mobile view switching + hash routing (#home/#year/#todo/#dashboard)
-  birthdays.js        Birthdays page logic (add/edit/delete, remaining days)
+  birthdays.js        Birthdays view logic (add/edit/delete, remaining days;
+                      embedded in index.html, FA + EN via i18n.js)
   streak.js           Daily-visit streak counter (header badge)
 sw.js                 Service worker: network-first caching (offline support
                       + updates with a single refresh)

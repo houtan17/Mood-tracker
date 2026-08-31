@@ -1,6 +1,8 @@
 /* ============================================
    BIRTHDAYS — js/birthdays.js
-   The former to-do page, repurposed. Persian-only.
+   Embedded Birthdays view inside index.html
+   (mobile view + desktop view; the old todo.html
+   is now a thin redirect for old links).
    Storage key: "birthdaysTracker.v1"
    Item shape: { id, name, dateISO "yyyy-mm-dd", createdAt }
    Birth dates are entered with Jalali (Shamsi)
@@ -9,6 +11,7 @@
    the name, the Jalali date and the days remaining
    until the next birthday.
    Features: add, edit, delete, sorted by soonest.
+   All texts come from js/i18n.js (FA + EN).
    ============================================ */
 
 var Birthdays = (function () {
@@ -16,8 +19,6 @@ var Birthdays = (function () {
 
   var KEY = "birthdaysTracker.v1";
   var editingId = null;
-  var MONTHS = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
-    "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"];
   var YEAR_RANGE = 120; // how many years back the year dropdown goes
 
   function $(id) { return document.getElementById(id); }
@@ -106,10 +107,11 @@ var Birthdays = (function () {
       daySel.appendChild(od);
     }
 
-    /* Month options (فروردین … اسفند) */
+    /* Month options (month names come from i18n) */
+    var months = I18N.t("months");
     var mSel = $("bdayMonth");
     mSel.innerHTML = "";
-    MONTHS.forEach(function (name, i) {
+    months.forEach(function (name, i) {
       var om = document.createElement("option");
       om.value = i + 1;
       om.textContent = name;
@@ -154,6 +156,20 @@ var Birthdays = (function () {
     el.textContent = I18N.formatFullDate(s.jy, s.jm, s.jd);
   }
 
+  /* ----- Static texts (title, form, empty state) ----- */
+  function applyTexts() {
+    $("bdayTitle").textContent = I18N.t("bdayTitle");
+    $("bdayName").placeholder = I18N.t("bdayNamePlaceholder");
+    $("bdayAddBtn").textContent =
+      editingId ? "✓ " + I18N.t("save") : I18N.t("todoAddBtn");
+    $("bdayEmpty").innerHTML =
+      '<span class="bday-empty-emoji" aria-hidden="true">🎂</span><p>' +
+      I18N.t("bdayEmptyText") + "</p>";
+    $("bdayDay").setAttribute("aria-label", I18N.t("bdayDayLabel"));
+    $("bdayMonth").setAttribute("aria-label", I18N.t("bdayMonthLabel"));
+    $("bdayYear").setAttribute("aria-label", I18N.t("bdayYearLabel"));
+  }
+
   function toISO(jy, jm, jd) {
     var g = Jalali.toGregorian(jy, jm, jd);
     function pad(n) { return n < 10 ? "0" + n : String(n); }
@@ -176,7 +192,7 @@ var Birthdays = (function () {
     });
     save(data);
     render();
-    showToast("اضافه شد ✓");
+    showToast(I18N.t("bdayAdded"));
   }
 
   function updateItem(id, name, dateISO) {
@@ -186,7 +202,7 @@ var Birthdays = (function () {
     });
     save(data);
     render();
-    showToast("ویرایش شد ✓");
+    showToast(I18N.t("bdayEdited"));
   }
 
   function removeItem(id) {
@@ -194,7 +210,7 @@ var Birthdays = (function () {
     data.items = data.items.filter(function (it) { return it.id !== id; });
     save(data);
     render();
-    showToast("حذف شد");
+    showToast(I18N.t("bdayDeleted"));
   }
 
   /* ----- Edit (fills the form, switches it to update mode) ----- */
@@ -208,7 +224,7 @@ var Birthdays = (function () {
     fill(j.jy, j.jm, j.jd);
     $("bdayName").value = item.name;
     updatePreview();
-    $("bdayAddBtn").textContent = "✓ ذخیره";
+    $("bdayAddBtn").textContent = "✓ " + I18N.t("save");
     render();
     $("bdayName").focus();
   }
@@ -218,7 +234,7 @@ var Birthdays = (function () {
     $("bdayName").value = "";
     fill();
     updatePreview();
-    $("bdayAddBtn").textContent = "＋ افزودن";
+    $("bdayAddBtn").textContent = I18N.t("todoAddBtn");
     render();
   }
 
@@ -234,7 +250,7 @@ var Birthdays = (function () {
         left: daysUntil(g.gm, g.gd)
       };
     }).sort(function (a, b) {
-      return a.left - b.left || a.name.localeCompare(b.name, "fa");
+      return a.left - b.left || a.name.localeCompare(b.name);
     });
 
     var html = "";
@@ -242,12 +258,14 @@ var Birthdays = (function () {
       var initial = it.name.trim().charAt(0) || "🎂";
       var badge;
       if (it.left === 0) {
-        badge = '<span class="bday-badge is-today">امروز تولدشه! 🎉</span>';
+        badge = '<span class="bday-badge is-today">' +
+          I18N.t("bdayToday") + "</span>";
       } else if (it.left === 1) {
-        badge = '<span class="bday-badge is-soon">فردا! 🎁</span>';
+        badge = '<span class="bday-badge is-soon">' +
+          I18N.t("bdayTomorrow") + "</span>";
       } else {
         badge = '<span class="bday-badge">' +
-          I18N.formatNumber(it.left) + " روز مانده</span>";
+          I18N.f("bdayInDays", I18N.formatNumber(it.left)) + "</span>";
       }
 
       html += '<div class="bday-item" data-id="' + it.id + '">' +
@@ -260,9 +278,9 @@ var Birthdays = (function () {
         "</div>" +
         '<div class="bday-actions">' +
           '<button class="bday-edit" data-action="edit" ' +
-          'aria-label="ویرایش">✏️</button>' +
+          'aria-label="' + I18N.t("bdayEditAria") + '">✏️</button>' +
           '<button class="bday-del" data-action="remove" ' +
-          'aria-label="حذف">✕</button>' +
+          'aria-label="' + I18N.t("bdayDelAria") + '">✕</button>' +
         "</div>" +
         "</div>";
     });
@@ -274,7 +292,7 @@ var Birthdays = (function () {
     else empty.classList.add("hidden");
 
     $("bdayCount").textContent = items.length === 0 ? "" :
-      I18N.formatNumber(items.length) + " تولد ثبت شده";
+      I18N.f("bdayCountMsg", I18N.formatNumber(items.length));
   }
 
   /* ----- Events ----- */
@@ -284,12 +302,12 @@ var Birthdays = (function () {
       var nameEl = $("bdayName");
       var name = nameEl.value.trim();
 
-      if (!name) { showToast("اول اسم را بنویس"); nameEl.focus(); return; }
+      if (!name) { showToast(I18N.t("bdayNameRequired")); nameEl.focus(); return; }
 
       var s = selectedDate();
       var mx = maxDay(s.jy, s.jm);
       if (s.jd < 1 || s.jd > mx) {
-        showToast("این روز در این ماه معتبر نیست");
+        showToast(I18N.t("bdayInvalidDay"));
         return;
       }
 
@@ -324,17 +342,18 @@ var Birthdays = (function () {
 
       if (action === "edit") startEdit(id);
       else if (action === "remove") {
-        if (window.confirm("این تولد حذف شود؟")) removeItem(id);
+        if (window.confirm(I18N.t("bdayConfirmDelete"))) removeItem(id);
       }
     });
   }
 
-  /* ----- Init ----- */
+  /* ----- Init -----
+     Runs on index.html (the embedded view). Theme, language
+     and page title are owned by app.js — nothing forced here. */
   function init() {
-    I18N.setLang("fa"); // Persian-only page (like the old to-do page)
-    document.title = "تولدها رو فراموش نکن 🥳🥳";
-    ThemeManager.init();
+    if (!$("bdayAddForm")) return; // birthdays UI not on this page
     wireEvents();
+    applyTexts();
     fill();
     render();
     updatePreview();
@@ -342,5 +361,12 @@ var Birthdays = (function () {
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { render: render };
+  return {
+    render: render,
+    /* Called by app.js on language switch / applyAll */
+    refresh: function () {
+      applyTexts();
+      render();
+    }
+  };
 })();

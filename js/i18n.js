@@ -72,6 +72,26 @@ var I18N = (function () {
       navYear: "شمارنده",
       navTodo: "کارها",
 
+      /* ----- Birthdays view ----- */
+      bdayTitle: "تولدها",
+      bdayNamePlaceholder: "اسم شخص...",
+      bdayDayLabel: "روز",
+      bdayMonthLabel: "ماه",
+      bdayYearLabel: "سال",
+      bdayToday: "امروز تولدشه! 🎉",
+      bdayTomorrow: "فردا! 🎁",
+      bdayInDays: "{0} روز مانده",
+      bdayCountMsg: "{0} تولد ثبت شده",
+      bdayEmptyText: "هنوز تولدی اضافه نشده.<br />اولین تولد رو اضافه کن!",
+      bdayNameRequired: "اول اسم را بنویس",
+      bdayInvalidDay: "این روز در این ماه معتبر نیست",
+      bdayConfirmDelete: "این تولد حذف شود؟",
+      bdayAdded: "اضافه شد ✓",
+      bdayEdited: "ویرایش شد ✓",
+      bdayDeleted: "حذف شد",
+      bdayEditAria: "ویرایش",
+      bdayDelAria: "حذف",
+
       /* ----- Dashboard ----- */
       dashboard: "داشبورد",
       back: "بازگشت",
@@ -166,6 +186,26 @@ var I18N = (function () {
       navHome: "Home",
       navYear: "Counter",
       navTodo: "Tasks",
+
+      /* ----- Birthdays view ----- */
+      bdayTitle: "Birthdays",
+      bdayNamePlaceholder: "Person's name...",
+      bdayDayLabel: "Day",
+      bdayMonthLabel: "Month",
+      bdayYearLabel: "Year",
+      bdayToday: "Birthday is today! 🎉",
+      bdayTomorrow: "Tomorrow! 🎁",
+      bdayInDays: "{0} days left",
+      bdayCountMsg: "{0} birthdays saved",
+      bdayEmptyText: "No birthdays yet.<br />Add your first one!",
+      bdayNameRequired: "Write a name first",
+      bdayInvalidDay: "This day is not valid in this month",
+      bdayConfirmDelete: "Delete this birthday?",
+      bdayAdded: "Added ✓",
+      bdayEdited: "Saved ✓",
+      bdayDeleted: "Deleted",
+      bdayEditAria: "Edit",
+      bdayDelAria: "Delete",
 
       /* ----- Dashboard ----- */
       dashboard: "Dashboard",

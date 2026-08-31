@@ -45,6 +45,23 @@ body[data-view="dashboard"] .home-layout {
   display: none;
 }
 
+/* ----- Birthdays view (embedded former birthdays page,
+   hidden unless active — same pattern as the dashboard) ----- */
+#viewBirthdays {
+  display: none;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+body[data-view="birthdays"] #viewBirthdays {
+  display: block;
+  animation: card-in 0.35s ease both;
+}
+
+body[data-view="birthdays"] .home-layout {
+  display: none;
+}
+
 /* ----- Side panels ----- */
 .panel {
   display: flex;
@@ -201,26 +218,33 @@ body[data-view="dashboard"] .home-layout {
     white-space: normal;
   }
 
-  /* Room for the fixed bottom nav */
+  /* Room for the floating bottom nav */
   body {
-    padding-bottom: 86px;
+    padding-bottom: 104px;
   }
 
   .toast-holder {
-    bottom: 92px;
+    bottom: 110px;
   }
 
+  /* ----- Floating pill navigation -----
+     Detached from the screen edges (big border-radius +
+     breathing room at the bottom), translucent glassy
+     background, soft floating shadow. */
   .bottom-nav {
     position: fixed;
-    inset-inline: 0;
-    bottom: 0;
+    inset-inline: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
     z-index: 80;
     display: flex;
-    gap: 2px;
-    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -8px 24px rgba(15, 18, 32, 0.14);
+    gap: 4px;
+    padding: 8px 10px;
+    background: var(--header-glass);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    box-shadow: 0 12px 32px rgba(15, 18, 32, 0.22);
   }
 
   .nav-item {
@@ -229,9 +253,9 @@ body[data-view="dashboard"] .home-layout {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: 6px 2px;
-    border-radius: 10px;
+    gap: 3px;
+    padding: 8px 2px;
+    border-radius: 18px;
     font-size: 0.6rem;
     font-weight: 700;
     color: var(--text-muted);
@@ -242,9 +266,18 @@ body[data-view="dashboard"] .home-layout {
     transform: scale(0.94);
   }
 
+  /* Stroke SVG icons inherit the item color */
   .nav-ico {
-    font-size: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
+  }
+
+  .nav-ico svg {
+    width: 22px;
+    height: 22px;
+    display: block;
   }
 
   .nav-label {
@@ -268,16 +301,11 @@ body[data-view="dashboard"] .home-layout {
     display: none;
   }
 
-  /* On secondary pages (Birthdays) the bottom nav replaces
-     the header back button */
-  .app-header .back-btn {
+  /* The dashboard back button is desktop-only — on mobile
+     the bottom nav handles navigation */
+  #viewDashboard .back-btn,
+  #viewBirthdays .back-btn {
     display: none;
-  }
-
-  /* Birthdays page: only the theme toggle remains in the
-     second header row — center it */
-  .bday-page .header-inner {
-    justify-content: center;
   }
 
   .app-footer {

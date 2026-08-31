@@ -188,13 +188,6 @@
     flex: 1 1 auto;
     min-width: 0;
   }
-
-  /* Compact back button on every page's header */
-  .header-inner .back-btn {
-    flex: 0 0 auto;
-    padding: 5px 12px;
-    font-size: 0.75rem;
-  }
 }
 
 /* ----- Calendar section ----- */
