@@ -12,8 +12,6 @@ var ThemeManager = (function () {
   var MODES = ["light", "dark", "auto"];
   var timerId = null;
 
-  function $(id) { return document.getElementById(id); }
-
   function getMode() {
     var t = Storage.getSetting("theme");
     return MODES.indexOf(t) !== -1 ? t : "auto";
@@ -50,22 +48,26 @@ var ThemeManager = (function () {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", r === "dark" ? "#0f1220" : "#5b7cfa");
 
-    updateButton();
+    updateButtons();
   }
 
-  function updateButton() {
-    var btn = $("themeToggle");
-    if (!btn) return;
+  /* Themes section buttons (dashboard view): label + active state */
+  function updateButtons() {
     var mode = getMode();
-    btn.textContent = iconOf(mode);
-    var title = I18N.t("themeToggleTitle") + ": " + labelOf(mode);
-    btn.title = title;
-    btn.setAttribute("aria-label", title);
+    var btns = document.querySelectorAll(".theme-opt[data-theme-mode]");
+    Array.prototype.forEach.call(btns, function (btn) {
+      var m = btn.getAttribute("data-theme-mode");
+      if (MODES.indexOf(m) === -1) return;
+      var active = m === mode;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+      btn.textContent = iconOf(m) + " " + labelOf(m);
+    });
   }
 
-  function cycle() {
-    var idx = MODES.indexOf(getMode());
-    Storage.setSetting("theme", MODES[(idx + 1) % MODES.length]);
+  function setMode(mode) {
+    if (MODES.indexOf(mode) === -1 || mode === getMode()) return;
+    Storage.setSetting("theme", mode);
     apply();
   }
 
@@ -77,17 +79,20 @@ var ThemeManager = (function () {
   return {
     init: function () {
       apply();
-      var btn = $("themeToggle");
-      if (btn) {
-        btn.addEventListener("click", cycle);
-      }
+      /* Wire the Themes section buttons (dashboard view) */
+      var btns = document.querySelectorAll(".theme-opt[data-theme-mode]");
+      Array.prototype.forEach.call(btns, function (btn) {
+        btn.addEventListener("click", function () {
+          setMode(btn.getAttribute("data-theme-mode"));
+        });
+      });
       if (timerId === null) {
         timerId = setInterval(tick, 60000);
       }
     },
 
     refresh: apply,
-    cycle: cycle,
+    setMode: setMode,
     getMode: getMode,
     resolvedLabel: function () { return labelOf(resolved()); }
   };

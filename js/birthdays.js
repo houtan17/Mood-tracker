@@ -1,8 +1,8 @@
 /* ============================================
    BIRTHDAYS — js/birthdays.js
    Embedded Birthdays view inside index.html
-   (mobile view + desktop view; the old todo.html
-   is now a thin redirect for old links).
+   (mobile view + desktop view; opened from the
+   footer button or the bottom-nav item).
    Storage key: "birthdaysTracker.v1"
    Item shape: { id, name, dateISO "yyyy-mm-dd", createdAt }
    Birth dates are entered with Jalali (Shamsi)
@@ -39,6 +39,8 @@ var Birthdays = (function () {
 
   function save(data) {
     localStorage.setItem(KEY, JSON.stringify(data));
+    /* Notify the sync engine (guarded: Sync may not be loaded) */
+    if (window.Sync) Sync.onLocalChange("bday");
   }
 
   function makeId() {
@@ -53,6 +55,9 @@ var Birthdays = (function () {
     box.textContent = msg;
     holder.innerHTML = "";
     holder.appendChild(box);
+    /* The animation ends at opacity 0 — remove the box so dead
+       toasts don't pile up in the DOM */
+    setTimeout(function () { box.remove(); }, 2400);
   }
 
   function escapeHtml(s) {
@@ -118,10 +123,15 @@ var Birthdays = (function () {
       mSel.appendChild(om);
     });
 
-    /* Year options: current Jalali year - RANGE .. current year */
+    /* Year options: current Jalali year - RANGE .. current year.
+       If the value to show (an existing birthday's year) is older
+       than the range, widen the range so the stored year remains
+       selectable instead of silently becoming an invalid/NaN date. */
+    var maxYear = Math.max(t.jy, year || t.jy);
+    var minYear = Math.min(t.jy - YEAR_RANGE, year || (t.jy - 20));
     var ySel = $("bdayYear");
     ySel.innerHTML = "";
-    for (var y = t.jy - YEAR_RANGE; y <= t.jy; y += 1) {
+    for (var y = minYear; y <= maxYear; y += 1) {
       var oy = document.createElement("option");
       oy.value = y;
       oy.textContent = I18N.formatNumber(y);
@@ -188,7 +198,8 @@ var Birthdays = (function () {
       id: makeId(),
       name: name,
       dateISO: dateISO,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     });
     save(data);
     render();
@@ -198,7 +209,11 @@ var Birthdays = (function () {
   function updateItem(id, name, dateISO) {
     var data = load();
     data.items.forEach(function (it) {
-      if (it.id === id) { it.name = name; it.dateISO = dateISO; }
+      if (it.id === id) {
+        it.name = name;
+        it.dateISO = dateISO;
+        it.updatedAt = Date.now();
+      }
     });
     save(data);
     render();

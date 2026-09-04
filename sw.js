@@ -16,10 +16,11 @@
       when online even WITHOUT a bump; the bump only
       purges the old offline cache on activate.
    3. Analytics, SW registration and the update toast
-      live in js/pwa.js — one shared copy for all pages.
+      live in js/pwa.js — one shared copy for the app
+      (everything runs inside index.html).
    ==================================================== */
 
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v12';
 const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
 
 /* Core assets cached on install (app shell).
@@ -27,10 +28,8 @@ const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
    so the app also works when hosted in a subfolder. */
 const PRECACHE_URLS = [
   './',
-  // --- pages ---
+  // --- page (the whole app is index.html) ---
   'index.html',
-  'todo.html', // thin redirect to index.html#birthdays (old links)
-  'dashboard.html', // thin redirect to index.html#dashboard
   // --- shared ---
   'manifest.json',
   'css/variables.css',
@@ -58,6 +57,12 @@ const PRECACHE_URLS = [
   // --- birthdays page ---
   'js/birthdays.js',
   'css/birthdays.css',
+  // --- accounts & cloud sync (Supabase) ---
+  'js/vendor/supabase.js', // supabase-js v2 UMD build (vendored, no CDN)
+  'js/supabase.js',        // project URL + anon key + shared client
+  'js/sync.js',            // offline-first snapshot-diff sync engine
+  'js/auth.js',            // account UI + session management
+  'css/auth.css',
   // --- icons ---
   'icons/icon-192.png',
   'icons/icon-512.png',
@@ -106,6 +111,22 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
+
+  // Skip unsupported request schemes (chrome-extension:, chrome:,
+  // moz-extension:, safari-extension:) — Cache.put() throws
+  // "Request scheme 'chrome-extension' is unsupported" for these.
+  if (/^(chrome-extension|chrome|moz-extension|safari-extension):$/.test(url.protocol)) {
+    return; // let the browser handle it, never cache or intercept
+  }
+
+  /* ----- Supabase API (auth + database): NEVER cached -----
+     The sync engine must always see live data; caching these
+     responses would serve stale reads and break offline diffing.
+     The vendored supabase.js library itself is same-origin, so
+     it is network-first like every other app asset. */
+  if (url.origin === 'https://pcgdhkczkyxhpybmrcuf.supabase.co') {
+    return; // default browser fetch, no SW involvement
+  }
 
   /* ----- Cross-origin: cache-first ----- */
   if (url.origin !== self.location.origin) {

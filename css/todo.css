@@ -1,5 +1,7 @@
 /* ============================================
-   TODO PAGE STYLES (css/todo.css)
+   TODO LIST STYLES (css/todo.css)
+   Shared by the to-do side panel (desktop home) and
+   the mobile To-Do view inside index.html.
    Uses the shared theme tokens from
    css/variables.css — light + dark both work.
    ============================================ */

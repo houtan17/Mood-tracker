@@ -251,11 +251,34 @@
   color: var(--text-muted);
 }
 
-/* ----- Backup / restore ----- */
-.backup-desc {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+/* ----- Themes (light / dark / automatic) ----- */
+.theme-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.theme-opt {
+  flex: 1 1 120px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.theme-opt:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+/* Active choice: the gradient pill look */
+.theme-opt.is-active,
+.theme-opt.is-active:hover {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--glow);
 }
 
 /* ----- Mobile -----

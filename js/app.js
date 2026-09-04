@@ -22,6 +22,9 @@ var App = (function () {
     box.textContent = msg;
     holder.innerHTML = "";
     holder.appendChild(box);
+    /* The animation ends at opacity 0 — remove the box so dead
+       toasts don't pile up in the DOM */
+    setTimeout(function () { box.remove(); }, 2400);
   }
 
   function setChevrons() {
@@ -93,6 +96,8 @@ var App = (function () {
     if (window.Birthdays && Birthdays.refresh) Birthdays.refresh();
     ThemeManager.refresh();
     Streak.refresh();
+    /* Auth header button labels (guarded: auth.js may be absent) */
+    if (window.Auth && Auth.applyTexts) Auth.applyTexts();
     if (document.body.getAttribute("data-view") === "dashboard") {
       Dashboard.refresh();
     }
@@ -313,16 +318,27 @@ var App = (function () {
 
     startTimers();
 
-    /* First visit → ask for the user's name */
-    if (!Storage.getSetting("userName")) {
-      promptName(true);
+    /* First visit → ask for the user's name.
+       Logged-in users skip this: their name arrives from the
+       synced profile. Wait for the auth session check first. */
+    if (window.Auth && Auth.whenReady) {
+      Auth.whenReady(maybePromptName);
+    } else {
+      maybePromptName();
     }
+  }
+
+  function maybePromptName() {
+    if (Storage.getSetting("userName")) return;
+    if (window.Auth && Auth.isSignedIn && Auth.isSignedIn()) return;
+    promptName(true);
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
   return {
     get selectedDate() { return selectedDate; },
-    openModal: openModal
+    openModal: openModal,
+    applyAll: applyAll
   };
 })();

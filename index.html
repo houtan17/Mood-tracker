@@ -44,21 +44,69 @@
     <link rel="stylesheet" href="css/todo.css" />
     <link rel="stylesheet" href="css/birthdays.css" />
     <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/auth.css" />
 
   </head>
   <body data-view="home">
     <!-- ===== Header ===== -->
     <header class="app-header">
       <div class="header-inner">
-        <button class="greet-btn hidden" id="greetBtn">
-          <span id="greetText"></span>
-        </button>
-        <h1 class="app-title" id="appTitle">ثبت حال روزانه</h1>
-        <div class="header-actions">
-          <button class="btn btn-ghost icon-btn" id="themeToggle">🌓</button>
+        <!-- Left zone: Login button / user chip. Physical left in both
+             FA (rtl) and EN (ltr) — the container direction is forced ltr. -->
+        <div class="header-zone header-left">
+          <div class="auth-area hidden" id="authArea">
+            <button class="btn btn-primary auth-login-btn hidden" id="authLoginBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span id="authLoginLabel">ورود</span>
+            </button>
+            <div class="user-chip-wrap hidden" id="userChipWrap">
+              <button class="user-chip" id="userChip" type="button" aria-haspopup="menu" aria-expanded="false">
+                <span class="user-avatar" id="userAvatar" aria-hidden="true">•</span>
+                <span class="user-name" id="userChipName"></span>
+                <svg class="user-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="user-menu hidden" id="userMenu" role="menu" aria-label="account menu">
+                <div class="user-menu-head">
+                  <span class="user-menu-name" id="userMenuName"></span>
+                  <span class="user-menu-email" id="userMenuEmail"></span>
+                </div>
+                <div class="user-menu-sync">
+                  <span class="sync-dot" id="syncDot" aria-hidden="true"></span>
+                  <span id="syncStatusText"></span>
+                </div>
+                <div class="user-menu-sep"></div>
+                <button class="user-menu-item" id="syncNowBtn" type="button" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                  <span id="syncNowLabel">همگام‌سازی الان</span>
+                </button>
+                <button class="user-menu-item" id="changePassBtn" type="button" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span id="changePassLabel">تغییر رمز عبور</span>
+                </button>
+                <button class="user-menu-item user-menu-logout" id="logoutBtn" type="button" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                  <span id="logoutLabel">خروج از حساب</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center zone: title + greeting, centered (greeting below title) -->
+        <div class="header-center">
+          <h1 class="app-title" id="appTitle">ثبت حال روزانه</h1>
+          <button class="greet-btn hidden" id="greetBtn">
+            <span id="greetText"></span>
+          </button>
+        </div>
+
+        <!-- Right zone: dashboard / streak / language switcher.
+             Language switcher is the rightmost element and the streak
+             badge sits right next to it. -->
+        <div class="header-zone header-right">
           <button class="btn btn-ghost" id="dashboardBtn" type="button">داشبورد</button>
-          <button class="btn btn-ghost" id="langToggle">EN</button>
           <div class="streak-badge" id="streakBadge" role="status"></div>
+          <button class="btn btn-ghost" id="langToggle">EN</button>
         </div>
       </div>
     </header>
@@ -89,9 +137,7 @@
               <button class="nav-btn" id="nextMonthBtn" aria-label="next">›</button>
             </div>
 
-            <div
-              style="display: flex; justify-content: center; margin-bottom: 12px"
-            >
+            <div class="today-wrap">
               <button class="btn btn-primary today-btn" id="todayBtn">امروز</button>
             </div>
 
@@ -188,14 +234,13 @@
           <div class="week-summary" id="weekSummary"></div>
         </section>
 
-        <!-- Backup / restore -->
+        <!-- Themes: light / dark / automatic -->
         <section class="card dash-card">
-          <h2 class="section-title" id="backupTitle">پشتیبان‌گیری و بازیابی</h2>
-          <p class="backup-desc" id="backupDesc"></p>
-          <div class="card-actions">
-            <button class="btn btn-ghost" id="exportBtn">پشتیبان‌گیری</button>
-            <button class="btn btn-ghost" id="importBtn">بازیابی</button>
-            <input type="file" id="importFileInput" accept="application/json,.json" hidden />
+          <h2 class="section-title" id="themesTitle">پوسته</h2>
+          <div class="theme-options" id="themeOptions">
+            <button type="button" class="btn theme-opt" data-theme-mode="light">☀️ روشن</button>
+            <button type="button" class="btn theme-opt" data-theme-mode="dark">🌙 تیره</button>
+            <button type="button" class="btn theme-opt" data-theme-mode="auto">🌓 خودکار</button>
           </div>
         </section>
       </section>
@@ -336,14 +381,65 @@
       </div>
     </div>
 
+    <!-- ===== Auth modal (login / signup / change password) ===== -->
+    <div class="modal-overlay hidden" id="authOverlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="card modal-card auth-card">
+        <button class="modal-close" id="closeAuthBtn" aria-label="close">×</button>
+        <h3 class="auth-title" id="authTitle">ورود به حساب</h3>
+
+        <div class="auth-tabs" id="authTabs">
+          <button type="button" class="auth-tab active" id="authTabLogin">ورود</button>
+          <button type="button" class="auth-tab" id="authTabSignup">ثبت‌نام</button>
+        </div>
+
+        <form id="authForm" novalidate>
+          <label class="auth-field">
+            <span class="auth-label" id="authEmailLabel">ایمیل</span>
+            <input type="email" class="auth-input" id="authEmail" placeholder="you@example.com" autocomplete="email" dir="ltr" />
+          </label>
+          <label class="auth-field">
+            <span class="auth-label" id="authPassLabel">رمز عبور</span>
+            <span class="auth-pass-wrap">
+              <input type="password" class="auth-input" id="authPass" autocomplete="current-password" dir="ltr" />
+              <button type="button" class="auth-pass-toggle" id="authPassToggle" aria-label="show password">👁</button>
+            </span>
+          </label>
+          <p class="auth-hint" id="authPassHint"></p>
+          <button type="button" class="auth-link" id="authForgotBtn">فراموشی رمز عبور؟</button>
+          <button type="submit" class="btn btn-primary auth-submit" id="authSubmitBtn">ورود</button>
+        </form>
+
+        <form id="authResetForm" class="hidden" novalidate>
+          <label class="auth-field">
+            <span class="auth-label" id="authNewPassLabel">رمز عبور جدید</span>
+            <input type="password" class="auth-input" id="authNewPass" autocomplete="new-password" dir="ltr" />
+          </label>
+          <button type="submit" class="btn btn-primary auth-submit" id="authResetSubmitBtn">ذخیره رمز جدید</button>
+        </form>
+
+        <p class="auth-error hidden" id="authError" role="alert"></p>
+
+        <p class="auth-hint" id="authHint" style="margin-top: 10px;"></p>
+
+        <div class="auth-divider" id="authDivider"><span id="authOrLabel">یا</span></div>
+        <button type="button" class="auth-google-btn" id="authGoogleBtn">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+          <span id="authGoogleLabel">ادامه با گوگل</span>
+        </button>
+      </div>
+    </div>
+
     <!-- ===== Toast holder ===== -->
     <div class="toast-holder" id="toastHolder"></div>
 
-    <!-- Scripts: order matters -->
+    <!-- Scripts: order matters (supabase vendor + config first;
+         sync/auth before app.js so App.init can talk to them) -->
+    <script src="js/vendor/supabase.js"></script>
     <script src="js/jalali.js"></script>
     <script src="js/moods.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/calendar.js"></script>
     <script src="js/streak.js"></script>
@@ -352,6 +448,8 @@
     <script src="js/dashboard.js"></script>
     <script src="js/yearcounter.js"></script>
     <script src="js/views.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
 
     <script src="js/pwa.js"></script>

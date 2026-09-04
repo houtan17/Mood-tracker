@@ -40,29 +40,61 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 3 physical zones: auth (left) | centered title + greeting |
+   actions (right). The container is forced ltr so "left" and
+   "right" mean the same thing in both FA (rtl) and EN (ltr);
+   the page direction is restored inside each zone. */
 .header-inner {
-  max-width: 720px;
+  direction: ltr;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 12px 20px;
   display: grid;
   /* minmax(0,1fr) lets side zones shrink instead of overflowing */
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
-.header-actions {
-  justify-self: end;
+/* Restore the page's own direction inside the zones */
+html[dir="rtl"] .header-left,
+html[dir="rtl"] .header-right,
+html[dir="rtl"] .header-center {
+  direction: rtl;
+}
+
+.header-left {
+  justify-self: start; /* physical left (container is ltr) */
+  min-width: 0;
+}
+
+.header-right {
+  justify-self: end; /* physical right */
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
 
-/* Greeting: first line, prominent, never truncated
+/* Center zone: title on top, greeting below, both centered */
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-title {
+  text-align: center;
+  font-size: 1.15rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Greeting: below the title, centered, never truncated
    (fixes Persian names being cut off) */
 .greet-btn {
-  justify-self: start;
   font-size: 1.02rem;
   font-weight: 700;
   color: var(--text);
@@ -70,19 +102,14 @@
   border-radius: var(--radius-sm);
   transition: color 0.15s, background-color 0.15s;
   min-width: 0;
+  max-width: 100%;
   overflow-wrap: anywhere;
-  text-align: start;
+  text-align: center;
 }
 
 .greet-btn:hover {
   color: var(--primary);
   background: var(--primary-soft);
-}
-
-.app-title {
-  justify-self: center;
-  text-align: center;
-  font-size: 1.15rem;
 }
 
 /* ----- Footer -----
@@ -162,30 +189,41 @@
   fill: currentColor;
 }
 
-/* Mobile: two-row header — full-width centered title on top,
-   greeting + actions below; nothing overlaps or gets clipped
-   (works for long titles on every page) */
+/* Mobile: title + greeting centered on the first row (higher than
+   everything else), then auth far left / actions far right on one
+   row; the wider side padding keeps the login button off the edge */
 @media (max-width: 540px) {
   .header-inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 4px 6px;
+    gap: 8px 10px;
+    padding: 10px 16px;
   }
 
-  .app-title {
+  /* Title + greeting row: full width, centered, first */
+  .header-center {
     order: -1;
     flex: 1 1 100%;
     min-width: 0;
-    text-align: center;
+  }
+
+  .app-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .greet-btn {
+  /* Bottom row: auth grows from the left, actions pinned right */
+  .header-left {
     flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .header-right {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     min-width: 0;
   }
 }

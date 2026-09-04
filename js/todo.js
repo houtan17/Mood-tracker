@@ -34,6 +34,8 @@ var TodoApp = (function () {
 
   function save(data) {
     localStorage.setItem(KEY, JSON.stringify(data));
+    /* Notify the sync engine (guarded: Sync may not be loaded) */
+    if (window.Sync) Sync.onLocalChange("todo");
   }
 
   function makeId() {
@@ -48,6 +50,9 @@ var TodoApp = (function () {
     box.textContent = msg;
     holder.innerHTML = "";
     holder.appendChild(box);
+    /* The animation ends at opacity 0 — remove the box so dead
+       toasts don't pile up in the DOM */
+    setTimeout(function () { box.remove(); }, 2400);
   }
 
   function escapeHtml(s) {
@@ -65,7 +70,8 @@ var TodoApp = (function () {
       text: text,
       done: false,
       fav: false,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     });
     save(data);
     render();
@@ -75,7 +81,7 @@ var TodoApp = (function () {
   function updateItem(id, text) {
     var data = load();
     data.items.forEach(function (it) {
-      if (it.id === id) it.text = text;
+      if (it.id === id) { it.text = text; it.updatedAt = Date.now(); }
     });
     save(data);
     render();
@@ -93,7 +99,7 @@ var TodoApp = (function () {
   function toggleDone(id) {
     var data = load();
     data.items.forEach(function (it) {
-      if (it.id === id) it.done = !it.done;
+      if (it.id === id) { it.done = !it.done; it.updatedAt = Date.now(); }
     });
     save(data);
     render();
@@ -102,7 +108,7 @@ var TodoApp = (function () {
   function toggleFav(id) {
     var data = load();
     data.items.forEach(function (it) {
-      if (it.id === id) it.fav = !it.fav;
+      if (it.id === id) { it.fav = !it.fav; it.updatedAt = Date.now(); }
     });
     save(data);
     render();

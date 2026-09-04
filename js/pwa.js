@@ -1,7 +1,7 @@
 /* ============================================
    PWA + ANALYTICS — js/pwa.js
-   The ONLY copy of the online/PWA glue code,
-   shared by every page (index, dashboard, todo):
+   The ONLY copy of the online/PWA glue code
+   (the whole app runs inside index.html):
    - Google Analytics bootstrap (gtag)
    - Service worker registration
    - "New version installed" toast (i18n-aware)

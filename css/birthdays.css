@@ -60,6 +60,8 @@
   color: var(--text);
   font: inherit;
   font-size: 0.85rem;
+  text-align: center;      /* centered values (e.g. "۱، فروردین، ۱۳۸۵") */
+  text-align-last: center; /* centers the closed control's shown value */
   outline: none;
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -88,6 +90,7 @@
   font-weight: 600;
   color: var(--primary);
   margin-bottom: 4px;
+  text-align: center;
 }
 
 .bday-count {

@@ -2,8 +2,9 @@
    DASHBOARD — js/dashboard.js
    Profile (name / age / interests), stats
    (mood today, notes count, tasks done %,
-   30-day average mood out of 10), weekly
-   report chart, and backup/restore.
+   30-day average mood out of 10) and the
+   weekly report chart. Theme switching lives
+   in the Themes section (js/theme.js).
    ============================================ */
 
 var Dashboard = (function () {
@@ -231,10 +232,7 @@ var Dashboard = (function () {
 
     $("weeklyTitle").textContent = I18N.t("weeklyReport");
 
-    $("backupTitle").textContent = I18N.t("backupTitle");
-    $("backupDesc").textContent = I18N.t("backupDesc");
-    $("exportBtn").textContent = I18N.t("exportBtn");
-    $("importBtn").textContent = I18N.t("importBtn");
+    $("themesTitle").textContent = I18N.t("themesTitle");
   }
 
   function applyAll() {
@@ -249,7 +247,8 @@ var Dashboard = (function () {
     Streak.refresh();
   }
 
-  /* ----- Events ----- */
+  /* ----- Events -----
+     (Theme buttons are wired by ThemeManager.init in js/theme.js) */
   function wireEvents() {
     $("saveProfileBtn").addEventListener("click", saveProfile);
 
@@ -260,28 +259,6 @@ var Dashboard = (function () {
           saveProfile();
         }
       });
-    });
-
-    $("exportBtn").addEventListener("click", function () {
-      Storage.exportToFile();
-    });
-
-    $("importFileInput").addEventListener("change", function () {
-      var file = this.files[0];
-      this.value = "";
-      if (!file) return;
-      Storage.importFromFile(file, function (err) {
-        if (err) {
-          showToast(I18N.t("importErrorMsg"));
-        } else {
-          applyAll();
-          showToast(I18N.t("importedMsg"));
-        }
-      });
-    });
-
-    $("importBtn").addEventListener("click", function () {
-      $("importFileInput").click();
     });
   }
 

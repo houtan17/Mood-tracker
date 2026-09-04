@@ -35,6 +35,19 @@ var Storage = (function () {
 
   function save(data) {
     localStorage.setItem(KEY, JSON.stringify(data));
+    /* Notify the sync engine (guarded: Sync may not be loaded,
+       e.g. when running as a plain file or on error pages) */
+    if (window.Sync) Sync.onLocalChange("mood");
+  }
+
+  /* Settings sync by timestamp (last-write-wins). Streak keys
+     get their own timestamp so they sync independently. */
+  function touchTimestamps(data, name) {
+    var t = Date.now();
+    data.settingsUpdatedAt = t;
+    if (name === "lastVisitDate" || name === "streakCount") {
+      data.streakUpdatedAt = t;
+    }
   }
 
   function dateKey(jy, jm, jd) {
@@ -74,59 +87,12 @@ var Storage = (function () {
     setSetting: function (name, value) {
       var data = load();
       data.settings[name] = value;
+      touchTimestamps(data, name);
       save(data);
     },
 
     getSetting: function (name) {
       return load().settings[name];
-    },
-
-    exportToFile: function () {
-      var blob = new Blob([JSON.stringify(load(), null, 2)], { type: "application/json" });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement("a");
-      a.href = url;
-      a.download = "mood-tracker-backup.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    },
-
-    /* Merges entries from a backup file into existing data.
-       Only well-shaped entries are accepted.
-       Calls back with (errorMessage | null). */
-    importFromFile: function (file, done) {
-      var reader = new FileReader();
-      reader.onload = function () {
-        try {
-          var incoming = JSON.parse(reader.result);
-          if (!incoming || typeof incoming.entries !== "object" ||
-            Array.isArray(incoming.entries)) {
-            done("invalid");
-            return;
-          }
-          var keyRe = /^\d{4}-\d{2}-\d{2}$/;
-          var data = load();
-          Object.keys(incoming.entries).forEach(function (k) {
-            var e = incoming.entries[k];
-            if (!keyRe.test(k) || !e || typeof e !== "object") return;
-            if (typeof e.mood !== "number" || e.mood < 1 || e.mood > Moods.COUNT) return;
-            if (e.note != null && typeof e.note !== "string") return;
-            data.entries[k] = {
-              mood: e.mood,
-              note: typeof e.note === "string" ? e.note : "",
-              updatedAt: typeof e.updatedAt === "number" ? e.updatedAt : Date.now()
-            };
-          });
-          save(data);
-          done(null);
-        } catch (e) {
-          done("invalid");
-        }
-      };
-      reader.onerror = function () { done("invalid"); };
-      reader.readAsText(file);
     }
   };
 })();
