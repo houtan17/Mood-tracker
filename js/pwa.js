@@ -29,16 +29,19 @@
     window.gtag("config", GA_ID);
   }
 
-  /* ---------- "New version installed" toast ---------- */
+  /* ---------- "New version installed" toast ----------
+     Delegates to the shared helper (js/ui.js); falls back to a
+     minimal local toast if ui.js isn't loaded. */
   function showUpdateToast() {
+    /* I18N may not be ready on the todo page — fall back to English */
+    var msg = (window.I18N && I18N.t("updateInstalled")) ||
+      "New version installed \u2728";
+    if (window.UI && UI.toast) { UI.toast(msg); return; }
     var holder = document.getElementById("toastHolder");
     if (!holder) return;
     holder.innerHTML = "";
     var box = document.createElement("div");
     box.className = "toast-box";
-    /* I18N may not be ready on the todo page — fall back to English */
-    var msg = (window.I18N && I18N.t("updateInstalled")) ||
-      "New version installed \u2728";
     box.textContent = msg;
     holder.appendChild(box);
   }

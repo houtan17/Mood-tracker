@@ -237,3 +237,8 @@
     font-size: 0.78rem;
   }
 }
+
+/* Favorite star: filled when the item is pinned */
+.todo-fav.is-fav .icon {
+  fill: currentColor;
+}

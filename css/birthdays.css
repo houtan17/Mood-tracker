@@ -264,3 +264,149 @@
     font-size: 1.05rem;
   }
 }
+
+/* ============================================
+   DATE CONVERTER (Jalali <-> Gregorian)
+   Second card of the Birthdays view.
+   Logic lives in js/dateconverter.js.
+   ============================================ */
+
+.dc-card {
+  margin-top: 16px;
+}
+
+/* Direction tabs (Persian -> Gregorian / reverse) */
+.dc-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dc-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+
+.dc-tab:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.dc-tab.is-active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Day / month / year rows (inherit .bday-select styling) */
+.dc-date-row {
+  display: flex;
+  gap: 8px;
+}
+
+.dc-date-row .dc-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.dc-date-row .dc-month {
+  flex: 1.5;
+}
+
+/* Swap direction (carries the last result over) */
+.dc-swap-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.dc-swap-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0; /* kill UA button padding so the icon centers exactly */
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s,
+    transform 0.25s ease;
+}
+
+.dc-swap-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  transform: rotate(180deg);
+}
+
+.dc-swap-btn .icon {
+  width: 17px;
+  height: 17px;
+  display: block; /* block-level: no inline baseline gap below the SVG */
+}
+
+/* Result box */
+.dc-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+}
+
+.dc-result-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.dc-result-value {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+/* Validation error (role="alert") */
+.dc-error {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+}
+
+/* Mobile: tighter tabs & rows */
+@media (max-width: 540px) {
+  .dc-tabs {
+    gap: 6px;
+  }
+
+  .dc-tab {
+    font-size: 0.72rem;
+    padding: 8px;
+  }
+
+  .dc-date-row {
+    gap: 6px;
+  }
+}

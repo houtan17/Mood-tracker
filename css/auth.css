@@ -93,6 +93,11 @@
   transform: rotate(180deg);
 }
 
+.user-caret .icon {
+  width: 14px;
+  height: 14px;
+}
+
 /* ----- Header: user dropdown menu -----
    The chip always sits at the physical left of the header, so the
    menu is anchored with physical `left` and opens rightwards in

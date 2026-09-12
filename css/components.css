@@ -57,6 +57,22 @@
   filter: brightness(0.97);
 }
 
+/* ----- Lucide icons (js/icons.js) -----
+   Every icon SVG gets class="icon"; em-based sizing scales
+   with the host control's font-size. Directional icons
+   (back arrows, month chevrons) are mirrored horizontally
+   in RTL so they always point the way the user reads. */
+.icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+}
+
+html[dir="rtl"] .back-btn .icon,
+html[dir="rtl"] .nav-btn .icon {
+  transform: scaleX(-1);
+}
+
 /* ----- Card ----- */
 .card {
   background: var(--card);

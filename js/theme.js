@@ -29,10 +29,10 @@ var ThemeManager = (function () {
     return mode;
   }
 
+  /* Lucide icon names for each mode */
   function iconOf(mode) {
-    return mode === "light" ? "\u2600\uFE0F" :      // ☀️
-           mode === "dark"  ? "\uD83C\uDF19" :      // 🌙
-                              "\uD83C\uDF13";       // 🌓
+    return mode === "light" ? "sun" :
+           mode === "dark"  ? "moon" : "sun-moon";
   }
 
   function labelOf(mode) {
@@ -61,7 +61,7 @@ var ThemeManager = (function () {
       var active = m === mode;
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", active ? "true" : "false");
-      btn.textContent = iconOf(m) + " " + labelOf(m);
+      btn.innerHTML = Icons.get(iconOf(m)) + "<span>" + labelOf(m) + "</span>";
     });
   }
 

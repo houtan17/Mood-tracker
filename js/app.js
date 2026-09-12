@@ -15,23 +15,10 @@ var App = (function () {
   /* ----- Helpers ----- */
   function $(id) { return document.getElementById(id); }
 
-  function showToast(msg) {
-    var holder = $("toastHolder");
-    var box = document.createElement("div");
-    box.className = "toast-box";
-    box.textContent = msg;
-    holder.innerHTML = "";
-    holder.appendChild(box);
-    /* The animation ends at opacity 0 — remove the box so dead
-       toasts don't pile up in the DOM */
-    setTimeout(function () { box.remove(); }, 2400);
-  }
-
-  function setChevrons() {
-    var rtl = I18N.t("dir") === "rtl";
-    $("prevMonthBtn").textContent = rtl ? "\u203A" : "\u2039"; // › : ‹
-    $("nextMonthBtn").textContent = rtl ? "\u2039" : "\u203A"; // ‹ : ›
-  }
+  /* Toasts live in js/ui.js (UI.toast); Lucide icons in
+     js/icons.js. (The old setChevrons() manual RTL chevron
+     swap was replaced by static Lucide chevrons + a CSS
+     flip — see css/components.css.) */
 
   /* ----- Legend ----- */
   function renderLegend() {
@@ -50,10 +37,11 @@ var App = (function () {
     $("langToggle").textContent = I18N.t("langSwitchLabel");
     $("todayBtn").textContent = I18N.t("today");
     $("dashboardBtn").textContent = I18N.t("dashboard");
-    $("dashBackBtn").textContent =
-      (I18N.t("dir") === "rtl" ? "\u2192" : "\u2190") + " " + I18N.t("back");
-    $("bdayBackBtn").textContent =
-      (I18N.t("dir") === "rtl" ? "\u2192" : "\u2190") + " " + I18N.t("back");
+    /* Back buttons: Lucide arrow + label. CSS flips the arrow
+       horizontally in RTL (see html[dir="rtl"] .back-btn .icon). */
+    var backHtml = Icons.get("arrow-left") + "<span>" + I18N.t("back") + "</span>";
+    $("dashBackBtn").innerHTML = backHtml;
+    $("bdayBackBtn").innerHTML = backHtml;
     $("saveEntryBtn").textContent = I18N.t("save");
     $("deleteEntryBtn").textContent = I18N.t("remove");
     $("noteInput").placeholder = I18N.t("notePlaceholder");
@@ -70,7 +58,7 @@ var App = (function () {
 
     /* To-do side panel */
     $("todoPanelTitle").textContent = I18N.t("todoList");
-    $("todoAddBtn").textContent = I18N.t("todoAddBtn");
+    $("todoAddBtnLabel").textContent = I18N.t("todoAddBtn");
     $("todoInput").placeholder = I18N.t("todoAddPlaceholder");
     $("todoEmpty").innerHTML =
       '<span class="todo-empty-emoji" aria-hidden="true">🗒️</span><p>' +
@@ -83,7 +71,6 @@ var App = (function () {
     $("navYearLabel").textContent = I18N.t("navYear");
     $("navTodoLabel").textContent = I18N.t("navTodo");
 
-    setChevrons();
     renderGreeting();
   }
 
@@ -147,7 +134,7 @@ var App = (function () {
   function saveName() {
     var name = $("nameInput").value.trim();
     if (!name) {
-      showToast(I18N.t("nameRequiredMsg"));
+      UI.toast(I18N.t("nameRequiredMsg"));
       return;
     }
     Storage.setSetting("userName", name);
@@ -259,18 +246,18 @@ var App = (function () {
 
       /* Defense in depth: never save outside the editable window */
       if (!Calendar.isEditable(selectedDate.jy, selectedDate.jm, selectedDate.jd)) {
-        showToast(I18N.t("dateLockedMsg"));
+        UI.toast(I18N.t("dateLockedMsg"));
         return;
       }
       if (!selectedMood) {
-        showToast(I18N.t("selectMoodMsg"));
+        UI.toast(I18N.t("selectMoodMsg"));
         return;
       }
 
       Storage.setEntry(selectedDate.jy, selectedDate.jm, selectedDate.jd,
         selectedMood, $("noteInput").value.trim());
       closeModal();
-      showToast(I18N.t("savedMsg"));
+      UI.toast(I18N.t("savedMsg"));
     });
 
     $("deleteEntryBtn").addEventListener("click", function () {
@@ -278,7 +265,7 @@ var App = (function () {
       if (!window.confirm(I18N.t("confirmDelete"))) return;
       Storage.removeEntry(selectedDate.jy, selectedDate.jm, selectedDate.jd);
       closeModal();
-      showToast(I18N.t("deletedMsg"));
+      UI.toast(I18N.t("deletedMsg"));
     });
 
     $("langToggle").addEventListener("click", function () {

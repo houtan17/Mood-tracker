@@ -43,29 +43,8 @@ var Birthdays = (function () {
     if (window.Sync) Sync.onLocalChange("bday");
   }
 
-  function makeId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  }
-
-  /* ----- UI helpers ----- */
-  function showToast(msg) {
-    var holder = $("toastHolder");
-    var box = document.createElement("div");
-    box.className = "toast-box";
-    box.textContent = msg;
-    holder.innerHTML = "";
-    holder.appendChild(box);
-    /* The animation ends at opacity 0 — remove the box so dead
-       toasts don't pile up in the DOM */
-    setTimeout(function () { box.remove(); }, 2400);
-  }
-
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;",
-        '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
+  /* Shared helpers (UI.toast, UI.escapeHtml, UI.makeId) come
+     from js/ui.js; Lucide icons from js/icons.js. */
 
   /* ----- Date helpers ----- */
   function parseISO(iso) {
@@ -73,11 +52,8 @@ var Birthdays = (function () {
     return { gy: +p[0], gm: +p[1], gd: +p[2] };
   }
 
-  function maxDay(jy, jm) {
-    if (jm <= 6) return 31;
-    if (jm <= 11) return 30;
-    return Jalali.isLeapYear(jy) ? 30 : 29;
-  }
+  /* Esfand length is derived with Jalali.monthLength() from
+     js/jalali.js (the old local Jalali.monthLength() duplicate is gone). */
 
   /* Days until the next occurrence of this month/day
      (0 = today). Feb 29 rolls over to Mar 1 in
@@ -154,7 +130,7 @@ var Birthdays = (function () {
   /* When the month/year changes, keep the day valid */
   function clampDay() {
     var s = selectedDate();
-    var mx = maxDay(s.jy, s.jm);
+    var mx = Jalali.monthLength(s.jy, s.jm);
     if (s.jd > mx) $("bdayDay").value = mx;
   }
 
@@ -170,8 +146,8 @@ var Birthdays = (function () {
   function applyTexts() {
     $("bdayTitle").textContent = I18N.t("bdayTitle");
     $("bdayName").placeholder = I18N.t("bdayNamePlaceholder");
-    $("bdayAddBtn").textContent =
-      editingId ? "✓ " + I18N.t("save") : I18N.t("todoAddBtn");
+    $("bdayAddBtnLabel").textContent =
+      editingId ? I18N.t("save") : I18N.t("todoAddBtn");
     $("bdayEmpty").innerHTML =
       '<span class="bday-empty-emoji" aria-hidden="true">🎂</span><p>' +
       I18N.t("bdayEmptyText") + "</p>";
@@ -195,7 +171,7 @@ var Birthdays = (function () {
   function addItem(name, dateISO) {
     var data = load();
     data.items.push({
-      id: makeId(),
+      id: UI.makeId(),
       name: name,
       dateISO: dateISO,
       createdAt: Date.now(),
@@ -203,7 +179,7 @@ var Birthdays = (function () {
     });
     save(data);
     render();
-    showToast(I18N.t("bdayAdded"));
+    UI.toast(I18N.t("bdayAdded"));
   }
 
   function updateItem(id, name, dateISO) {
@@ -217,7 +193,7 @@ var Birthdays = (function () {
     });
     save(data);
     render();
-    showToast(I18N.t("bdayEdited"));
+    UI.toast(I18N.t("bdayEdited"));
   }
 
   function removeItem(id) {
@@ -225,7 +201,7 @@ var Birthdays = (function () {
     data.items = data.items.filter(function (it) { return it.id !== id; });
     save(data);
     render();
-    showToast(I18N.t("bdayDeleted"));
+    UI.toast(I18N.t("bdayDeleted"));
   }
 
   /* ----- Edit (fills the form, switches it to update mode) ----- */
@@ -239,7 +215,7 @@ var Birthdays = (function () {
     fill(j.jy, j.jm, j.jd);
     $("bdayName").value = item.name;
     updatePreview();
-    $("bdayAddBtn").textContent = "✓ " + I18N.t("save");
+    $("bdayAddBtnLabel").textContent = I18N.t("save");
     render();
     $("bdayName").focus();
   }
@@ -249,7 +225,7 @@ var Birthdays = (function () {
     $("bdayName").value = "";
     fill();
     updatePreview();
-    $("bdayAddBtn").textContent = I18N.t("todoAddBtn");
+    $("bdayAddBtnLabel").textContent = I18N.t("todoAddBtn");
     render();
   }
 
@@ -285,17 +261,19 @@ var Birthdays = (function () {
 
       html += '<div class="bday-item" data-id="' + it.id + '">' +
         '<span class="bday-avatar" aria-hidden="true">' +
-          escapeHtml(initial) + "</span>" +
+          UI.escapeHtml(initial) + "</span>" +
         '<div class="bday-info">' +
-          '<span class="bday-name">' + escapeHtml(it.name) + "</span>" +
+          '<span class="bday-name">' + UI.escapeHtml(it.name) + "</span>" +
           '<span class="bday-date">' + jalaliText(it.dateISO) + "</span>" +
           badge +
         "</div>" +
         '<div class="bday-actions">' +
           '<button class="bday-edit" data-action="edit" ' +
-          'aria-label="' + I18N.t("bdayEditAria") + '">✏️</button>' +
+          'aria-label="' + I18N.t("bdayEditAria") + '">' +
+          Icons.get("pencil") + "</button>" +
           '<button class="bday-del" data-action="remove" ' +
-          'aria-label="' + I18N.t("bdayDelAria") + '">✕</button>' +
+          'aria-label="' + I18N.t("bdayDelAria") + '">' +
+          Icons.get("x") + "</button>" +
         "</div>" +
         "</div>";
     });
@@ -317,12 +295,12 @@ var Birthdays = (function () {
       var nameEl = $("bdayName");
       var name = nameEl.value.trim();
 
-      if (!name) { showToast(I18N.t("bdayNameRequired")); nameEl.focus(); return; }
+      if (!name) { UI.toast(I18N.t("bdayNameRequired")); nameEl.focus(); return; }
 
       var s = selectedDate();
-      var mx = maxDay(s.jy, s.jm);
+      var mx = Jalali.monthLength(s.jy, s.jm);
       if (s.jd < 1 || s.jd > mx) {
-        showToast(I18N.t("bdayInvalidDay"));
+        UI.toast(I18N.t("bdayInvalidDay"));
         return;
       }
 
@@ -378,9 +356,16 @@ var Birthdays = (function () {
 
   return {
     render: render,
-    /* Called by app.js on language switch / applyAll */
+    /* Called by app.js on language switch / applyAll.
+       Re-fills the day/month/year dropdowns as well, so month
+       names and digits follow the new language — the user's
+       current selection is preserved. */
     refresh: function () {
+      if (!$("bdayAddForm")) return;
+      var keep = selectedDate();
+      fill(keep.jy, keep.jm, keep.jd);
       applyTexts();
+      updatePreview();
       render();
     }
   };

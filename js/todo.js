@@ -38,35 +38,14 @@ var TodoApp = (function () {
     if (window.Sync) Sync.onLocalChange("todo");
   }
 
-  function makeId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  }
-
-  /* ----- UI helpers ----- */
-  function showToast(msg) {
-    var holder = $("toastHolder");
-    var box = document.createElement("div");
-    box.className = "toast-box";
-    box.textContent = msg;
-    holder.innerHTML = "";
-    holder.appendChild(box);
-    /* The animation ends at opacity 0 — remove the box so dead
-       toasts don't pile up in the DOM */
-    setTimeout(function () { box.remove(); }, 2400);
-  }
-
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;",
-        '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
+  /* Shared helpers (UI.toast, UI.escapeHtml, UI.makeId) come
+     from js/ui.js; Lucide icons from js/icons.js. */
 
   /* ----- Mutations ----- */
   function addItem(text) {
     var data = load();
     data.items.push({
-      id: makeId(),
+      id: UI.makeId(),
       text: text,
       done: false,
       fav: false,
@@ -75,7 +54,7 @@ var TodoApp = (function () {
     });
     save(data);
     render();
-    showToast(I18N.t("todoAdded"));
+    UI.toast(I18N.t("todoAdded"));
   }
 
   function updateItem(id, text) {
@@ -85,7 +64,7 @@ var TodoApp = (function () {
     });
     save(data);
     render();
-    showToast(I18N.t("todoEdited"));
+    UI.toast(I18N.t("todoEdited"));
   }
 
   function removeItem(id) {
@@ -93,7 +72,7 @@ var TodoApp = (function () {
     data.items = data.items.filter(function (it) { return it.id !== id; });
     save(data);
     render();
-    showToast(I18N.t("todoDeleted"));
+    UI.toast(I18N.t("todoDeleted"));
   }
 
   function toggleDone(id) {
@@ -133,7 +112,7 @@ var TodoApp = (function () {
     if (!input) { editingId = null; render(); return; }
     var text = input.value.trim();
     if (!text) {
-      showToast(I18N.t("todoTextRequired"));
+      UI.toast(I18N.t("todoTextRequired"));
       input.focus();
       return;
     }
@@ -180,22 +159,24 @@ var TodoApp = (function () {
       if (isEditing) {
         /* Inline edit mode: text becomes an input */
         html += '<input type="text" class="todo-edit-input" maxlength="200"' +
-          ' value="' + escapeHtml(item.text) + '" />' +
+          ' value="' + UI.escapeHtml(item.text) + '" />' +
           '<button class="todo-edit-save" data-action="save-edit" ' +
-          'aria-label="save">✓</button>' +
+          'aria-label="save">' + Icons.get("check") + "</button>" +
           '<button class="todo-edit-cancel" data-action="cancel-edit" ' +
-          'aria-label="cancel">✕</button>';
+          'aria-label="cancel">' + Icons.get("x") + "</button>";
       } else {
         html += '<button class="todo-check" data-action="toggle-done" ' +
-          'aria-label="done" aria-pressed="' + item.done + '">✓</button>' +
-          '<span class="todo-text">' + escapeHtml(item.text) + "</span>" +
-          '<button class="todo-fav" data-action="toggle-fav" ' +
+          'aria-label="done" aria-pressed="' + item.done + '">' +
+          Icons.get("check") + "</button>" +
+          '<span class="todo-text">' + UI.escapeHtml(item.text) + "</span>" +
+          '<button class="todo-fav' + (item.fav ? " is-fav" : "") +
+          '" data-action="toggle-fav" ' +
           'aria-label="favorite" aria-pressed="' + item.fav + '">' +
-          (item.fav ? "★" : "☆") + "</button>" +
+          Icons.get("star") + "</button>" +
           '<button class="todo-edit" data-action="edit" ' +
-          'aria-label="edit">✏️</button>' +
+          'aria-label="edit">' + Icons.get("pencil") + "</button>" +
           '<button class="todo-del" data-action="remove" ' +
-          'aria-label="delete">✕</button>';
+          'aria-label="delete">' + Icons.get("x") + "</button>";
       }
 
       html += "</li>";
@@ -226,7 +207,7 @@ var TodoApp = (function () {
       var input = $("todoInput");
       var text = input.value.trim();
       if (!text) {
-        showToast(I18N.t("todoWriteFirst"));
+        UI.toast(I18N.t("todoWriteFirst"));
         input.focus();
         return;
       }
@@ -277,5 +258,11 @@ var TodoApp = (function () {
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { render: render, refresh: render };
+  return {
+    render: render,
+    refresh: render,
+    /* Read-only view of the stored items
+       (used by the dashboard's "tasks done" stat) */
+    items: function () { return load().items; }
+  };
 })();

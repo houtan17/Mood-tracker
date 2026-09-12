@@ -56,14 +56,14 @@
         <div class="header-zone header-left">
           <div class="auth-area hidden" id="authArea">
             <button class="btn btn-primary auth-login-btn hidden" id="authLoginBtn" type="button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span data-ico="user" aria-hidden="true"></span>
               <span id="authLoginLabel">ورود</span>
             </button>
             <div class="user-chip-wrap hidden" id="userChipWrap">
               <button class="user-chip" id="userChip" type="button" aria-haspopup="menu" aria-expanded="false">
                 <span class="user-avatar" id="userAvatar" aria-hidden="true">•</span>
                 <span class="user-name" id="userChipName"></span>
-                <svg class="user-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                <span class="user-caret" data-ico="chevron-down" aria-hidden="true"></span>
               </button>
               <div class="user-menu hidden" id="userMenu" role="menu" aria-label="account menu">
                 <div class="user-menu-head">
@@ -76,15 +76,15 @@
                 </div>
                 <div class="user-menu-sep"></div>
                 <button class="user-menu-item" id="syncNowBtn" type="button" role="menuitem">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                  <span data-ico="refresh-cw" aria-hidden="true"></span>
                   <span id="syncNowLabel">همگام‌سازی الان</span>
                 </button>
                 <button class="user-menu-item" id="changePassBtn" type="button" role="menuitem">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span data-ico="lock" aria-hidden="true"></span>
                   <span id="changePassLabel">تغییر رمز عبور</span>
                 </button>
                 <button class="user-menu-item user-menu-logout" id="logoutBtn" type="button" role="menuitem">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                  <span data-ico="log-out" aria-hidden="true"></span>
                   <span id="logoutLabel">خروج از حساب</span>
                 </button>
               </div>
@@ -132,9 +132,9 @@
         <div class="home-center" id="viewHome">
           <section class="card">
             <div class="calendar-header">
-              <button class="nav-btn" id="prevMonthBtn" aria-label="prev">‹</button>
+              <button class="nav-btn" id="prevMonthBtn" aria-label="prev"><span data-ico="chevron-left" aria-hidden="true"></span></button>
               <h2 class="month-title" id="monthTitle"></h2>
-              <button class="nav-btn" id="nextMonthBtn" aria-label="next">›</button>
+              <button class="nav-btn" id="nextMonthBtn" aria-label="next"><span data-ico="chevron-right" aria-hidden="true"></span></button>
             </div>
 
             <div class="today-wrap">
@@ -163,7 +163,8 @@
               autocomplete="off"
             />
             <button type="submit" class="btn btn-primary todo-add-btn" id="todoAddBtn">
-              ＋ افزودن
+              <span data-ico="plus" aria-hidden="true"></span>
+              <span id="todoAddBtnLabel">افزودن</span>
             </button>
           </form>
 
@@ -182,7 +183,10 @@
       <section id="viewDashboard">
         <!-- Back to home (desktop; mobile uses the bottom nav) -->
         <div class="dash-topbar">
-          <button class="btn btn-ghost back-btn" id="dashBackBtn" type="button">→ بازگشت</button>
+          <button class="btn btn-ghost back-btn" id="dashBackBtn" type="button">
+            <span data-ico="arrow-left" aria-hidden="true"></span>
+            <span id="dashBackBtnLabel">بازگشت</span>
+          </button>
         </div>
 
         <!-- Profile -->
@@ -250,7 +254,10 @@
         <section class="card bday-card">
           <!-- Back to home (desktop; mobile uses the bottom nav) -->
           <div class="bday-topbar">
-            <button class="btn btn-ghost back-btn" id="bdayBackBtn" type="button">→ بازگشت</button>
+            <button class="btn btn-ghost back-btn" id="bdayBackBtn" type="button">
+              <span data-ico="arrow-left" aria-hidden="true"></span>
+              <span id="bdayBackBtnLabel">بازگشت</span>
+            </button>
           </div>
 
           <div class="panel-head">
@@ -272,7 +279,8 @@
               <select class="bday-select" id="bdayYear" aria-label="سال"></select>
             </div>
             <button type="submit" class="btn btn-primary bday-add-btn" id="bdayAddBtn">
-              ＋ افزودن
+              <span data-ico="plus" aria-hidden="true"></span>
+              <span id="bdayAddBtnLabel">افزودن</span>
             </button>
           </form>
 
@@ -287,15 +295,62 @@
             <p>هنوز تولدی اضافه نشده.<br />اولین تولد رو اضافه کن!</p>
           </div>
         </section>
+
+        <!-- ===== Date Converter (Jalali <-> Gregorian) ===== -->
+        <section class="card bday-card dc-card" id="dcCard">
+          <div class="panel-head">
+            <h2 class="panel-title" id="dcTitle">تبدیل تاریخ</h2>
+          </div>
+
+          <!-- Direction tabs -->
+          <div class="dc-tabs" id="dcTabs">
+            <button type="button" class="dc-tab is-active" id="dcTabJ2g"
+              data-dc-mode="j2g" aria-selected="true">
+              <span id="dcTabJ2gLabel">شمسی → میلادی</span>
+            </button>
+            <button type="button" class="dc-tab" id="dcTabG2j"
+              data-dc-mode="g2j" aria-selected="false">
+              <span id="dcTabG2jLabel">میلادی → شمسی</span>
+            </button>
+          </div>
+
+          <!-- Jalali input (day / month / year) -->
+          <div class="dc-date-row" id="dcJalaliRow">
+            <select class="bday-select dc-select" id="dcJDay" aria-label="روز"></select>
+            <select class="bday-select dc-select dc-month" id="dcJMonth" aria-label="ماه"></select>
+            <select class="bday-select dc-select" id="dcJYear" aria-label="سال"></select>
+          </div>
+
+          <!-- Gregorian input (day / month / year) -->
+          <div class="dc-date-row hidden" id="dcGregRow">
+            <select class="bday-select dc-select" id="dcGDay" aria-label="روز"></select>
+            <select class="bday-select dc-select dc-month" id="dcGMonth" aria-label="ماه"></select>
+            <select class="bday-select dc-select" id="dcGYear" aria-label="سال"></select>
+          </div>
+
+          <!-- Swap direction (carries the last result over) -->
+          <div class="dc-swap-wrap">
+            <button type="button" class="dc-swap-btn" id="dcSwapBtn" aria-label="swap">
+              <span data-ico="arrow-right-left" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <!-- Live result -->
+          <div class="dc-result hidden" id="dcResult" role="status">
+            <span class="dc-result-label" id="dcResultLabel"></span>
+            <span class="dc-result-value" id="dcResultValue"></span>
+          </div>
+
+          <!-- Validation error -->
+          <p class="dc-error hidden" id="dcError" role="alert"></p>
+        </section>
       </section>
     </main>
 
     <!-- ===== Footer ===== -->
     <footer class="app-footer">
       <button class="todo-btn" id="todoLink" type="button">
-        <span class="todo-btn-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2 1 4 1 2-1 4-1 2 1 4 1 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3"/><path d="M12 8v3"/><path d="M17 8v3"/><path d="M7 4h.01"/><path d="M12 4h.01"/><path d="M17 4h.01"/></svg>
-        </span>
+        <span class="todo-btn-icon" aria-hidden="true" data-ico="cake"></span>
         <span class="todo-btn-label" id="todoLinkLabel">تولدها</span>
       </button>
       <a
@@ -315,38 +370,28 @@
     </footer>
 
     <!-- ===== Bottom Navigation Bar (mobile) =====
-       Icons: inline stroke SVGs (Lucide-style) that inherit
-       the item color via currentColor — active-tab highlight
-       keeps working without any extra styling. -->
+       Icons: Lucide SVGs injected by js/icons.js (data-ico
+       markers hydrated on load). They inherit the item color
+       via currentColor — active-tab highlight keeps working. -->
     <nav class="bottom-nav" aria-label="ناوبری اصلی">
       <button type="button" class="nav-item" data-view="birthdays">
-        <span class="nav-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2 1 4 1 2-1 4-1 2 1 4 1 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3"/><path d="M12 8v3"/><path d="M17 8v3"/><path d="M7 4h.01"/><path d="M12 4h.01"/><path d="M17 4h.01"/></svg>
-        </span>
+        <span class="nav-ico" aria-hidden="true" data-ico="cake"></span>
         <span class="nav-label" id="navBirthdaysLabel">تولدها</span>
       </button>
       <button type="button" class="nav-item" data-view="dashboard">
-        <span class="nav-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-        </span>
+        <span class="nav-ico" aria-hidden="true" data-ico="chart"></span>
         <span class="nav-label" id="navDashLabel">داشبورد</span>
       </button>
       <button type="button" class="nav-item" data-view="home">
-        <span class="nav-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-        </span>
+        <span class="nav-ico" aria-hidden="true" data-ico="calendar"></span>
         <span class="nav-label" id="navHomeLabel">خانه</span>
       </button>
       <button type="button" class="nav-item" data-view="year">
-        <span class="nav-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        </span>
+        <span class="nav-ico" aria-hidden="true" data-ico="target"></span>
         <span class="nav-label" id="navYearLabel">شمارنده</span>
       </button>
       <button type="button" class="nav-item" data-view="todo">
-        <span class="nav-ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
-        </span>
+        <span class="nav-ico" aria-hidden="true" data-ico="circle-check"></span>
         <span class="nav-label" id="navTodoLabel">کارها</span>
       </button>
     </nav>
@@ -355,7 +400,7 @@
     <div class="modal-overlay hidden" id="modalOverlay">
       <div class="card modal-card">
         <button class="modal-close" id="closeModalBtn" aria-label="close">
-          ×
+          <span data-ico="x" aria-hidden="true"></span>
         </button>
         <h3 class="modal-date" id="modalDateTitle"></h3>
         <div class="mood-picker" id="moodPicker"></div>
@@ -384,7 +429,7 @@
     <!-- ===== Auth modal (login / signup / change password) ===== -->
     <div class="modal-overlay hidden" id="authOverlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <div class="card modal-card auth-card">
-        <button class="modal-close" id="closeAuthBtn" aria-label="close">×</button>
+        <button class="modal-close" id="closeAuthBtn" aria-label="close"><span data-ico="x" aria-hidden="true"></span></button>
         <h3 class="auth-title" id="authTitle">ورود به حساب</h3>
 
         <div class="auth-tabs" id="authTabs">
@@ -401,7 +446,7 @@
             <span class="auth-label" id="authPassLabel">رمز عبور</span>
             <span class="auth-pass-wrap">
               <input type="password" class="auth-input" id="authPass" autocomplete="current-password" dir="ltr" />
-              <button type="button" class="auth-pass-toggle" id="authPassToggle" aria-label="show password">👁</button>
+              <button type="button" class="auth-pass-toggle" id="authPassToggle" aria-label="show password"><span data-ico="eye" aria-hidden="true"></span></button>
             </span>
           </label>
           <p class="auth-hint" id="authPassHint"></p>
@@ -436,6 +481,8 @@
          sync/auth before app.js so App.init can talk to them) -->
     <script src="js/vendor/supabase.js"></script>
     <script src="js/jalali.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/moods.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/storage.js"></script>
@@ -445,6 +492,7 @@
     <script src="js/streak.js"></script>
     <script src="js/todo.js"></script>
     <script src="js/birthdays.js"></script>
+    <script src="js/dateconverter.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/yearcounter.js"></script>
     <script src="js/views.js"></script>

@@ -18,6 +18,9 @@ var I18N = (function () {
         "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"],
       weekdays: ["ش", "ی", "د", "س", "چ", "پ", "ج"],
       weekdaysLong: ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"],
+      /* Gregorian month names (used by the Date Converter) */
+      gMonths: ["ژانویه", "فوریه", "مارس", "آوریل", "مه", "ژوئن",
+        "ژوئیه", "اوت", "سپتامبر", "اکتبر", "نوامبر", "دسامبر"],
       moods: ["عالی", "خوب", "معمولی", "بد", "خیلی بد"],
       notePlaceholder: "یادداشت امروز... (اختیاری)",
       save: "ذخیره",
@@ -98,7 +101,7 @@ var I18N = (function () {
 
       /* ----- To-do panel (side panel / mobile view) ----- */
       todoAddPlaceholder: "یک کار جدید بنویس...",
-      todoAddBtn: "＋ افزودن",
+      todoAddBtn: "افزودن",
       todoLeft: "{0} کار باقی مانده از {1}",
       todoFavDivider: "⭐ مهم",
       todoDoneDivider: "انجام‌شده",
@@ -135,6 +138,17 @@ var I18N = (function () {
       bdayDeleted: "حذف شد",
       bdayEditAria: "ویرایش",
       bdayDelAria: "حذف",
+
+      /* ----- Date Converter (Jalali <-> Gregorian) ----- */
+      dcTitle: "تبدیل تاریخ",
+      dcTabJ2g: "شمسی → میلادی",
+      dcTabG2j: "میلادی → شمسی",
+      dcSwapAria: "جابه‌جایی جهت تبدیل",
+      dcResultGreg: "تاریخ میلادی",
+      dcResultJalali: "تاریخ شمسی",
+      dcEmpty: "تاریخ را کامل انتخاب کن",
+      dcInvalidJalali: "این روز در ماه شمسی وجود ندارد",
+      dcInvalidGreg: "این روز در ماه میلادی وجود ندارد",
 
       /* ----- Dashboard ----- */
       dashboard: "داشبورد",
@@ -175,6 +189,9 @@ var I18N = (function () {
         "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"],
       weekdays: ["Sa", "Su", "Mo", "Tu", "We", "Th", "Fr"],
       weekdaysLong: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      /* Gregorian month names (used by the Date Converter) */
+      gMonths: ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"],
       moods: ["Great", "Good", "Okay", "Bad", "Awful"],
       notePlaceholder: "Today's note... (optional)",
       save: "Save",
@@ -255,7 +272,7 @@ var I18N = (function () {
 
       /* ----- To-do panel (side panel / mobile view) ----- */
       todoAddPlaceholder: "Write a new task...",
-      todoAddBtn: "＋ Add",
+      todoAddBtn: "Add",
       todoLeft: "{0} tasks left out of {1}",
       todoFavDivider: "⭐ Important",
       todoDoneDivider: "Done",
@@ -292,6 +309,17 @@ var I18N = (function () {
       bdayDeleted: "Deleted",
       bdayEditAria: "Edit",
       bdayDelAria: "Delete",
+
+      /* ----- Date Converter (Jalali <-> Gregorian) ----- */
+      dcTitle: "Date Converter",
+      dcTabJ2g: "Persian → Gregorian",
+      dcTabG2j: "Gregorian → Persian",
+      dcSwapAria: "Swap conversion direction",
+      dcResultGreg: "Gregorian date",
+      dcResultJalali: "Persian (Jalali) date",
+      dcEmpty: "Please select a complete date",
+      dcInvalidJalali: "This day doesn't exist in the Persian calendar",
+      dcInvalidGreg: "This day doesn't exist in the Gregorian calendar",
 
       /* ----- Dashboard ----- */
       dashboard: "Dashboard",

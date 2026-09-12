@@ -12,14 +12,7 @@ var Dashboard = (function () {
 
   function $(id) { return document.getElementById(id); }
 
-  function showToast(msg) {
-    var holder = $("toastHolder");
-    var box = document.createElement("div");
-    box.className = "toast-box";
-    box.textContent = msg;
-    holder.innerHTML = "";
-    holder.appendChild(box);
-  }
+  /* Toasts come from js/ui.js (UI.toast). */
 
   /* Mood level (1..5) -> score out of 10 (10..0), linear */
   function scoreOf(level) { return (5 - level) * 2.5; }
@@ -58,13 +51,12 @@ var Dashboard = (function () {
       '<span class="stat-big">' + I18N.formatNumber(count) + "</span>";
   }
 
-  /* ----- Stat: tasks done % (reads the to-do list storage) ----- */
+  /* ----- Stat: tasks done % (via the Todo module's public
+     API instead of parsing the "todoTracker.v1" storage raw) ----- */
   function renderTasks() {
     var items = [];
     try {
-      var raw = localStorage.getItem("todoTracker.v1");
-      var data = raw ? JSON.parse(raw) : null;
-      if (data && Array.isArray(data.items)) items = data.items;
+      if (window.TodoApp && TodoApp.items) items = TodoApp.items() || [];
     } catch (e) {
       items = [];
     }
@@ -194,7 +186,7 @@ var Dashboard = (function () {
   function saveProfile() {
     var name = $("dashNameInput").value.trim();
     if (!name) {
-      showToast(I18N.t("nameRequiredMsg"));
+      UI.toast(I18N.t("nameRequiredMsg"));
       return;
     }
 
@@ -203,7 +195,7 @@ var Dashboard = (function () {
     if (ageRaw !== "") {
       age = Number(ageRaw);
       if (!isFinite(age) || age < 1 || age > 120 || Math.floor(age) !== age) {
-        showToast(I18N.t("ageInvalidMsg"));
+        UI.toast(I18N.t("ageInvalidMsg"));
         return;
       }
     }
@@ -211,7 +203,7 @@ var Dashboard = (function () {
     Storage.setSetting("userName", name);
     Storage.setSetting("userAge", age);
     Storage.setSetting("userInterests", $("interestsInput").value.trim());
-    showToast(I18N.t("profileSaved"));
+    UI.toast(I18N.t("profileSaved"));
   }
 
   /* ----- Static texts ----- */

@@ -20,7 +20,7 @@
       (everything runs inside index.html).
    ==================================================== */
 
-const CACHE_VERSION = 'v12';
+const CACHE_VERSION = 'v14';
 const CACHE_NAME = `mood-tracker-${CACHE_VERSION}`;
 
 /* Core assets cached on install (app shell).
@@ -37,6 +37,8 @@ const PRECACHE_URLS = [
   'css/layout.css',
   'css/components.css',
   'js/jalali.js',
+  'js/icons.js',   // Lucide icon set + data-ico hydration
+  'js/ui.js',      // shared helpers (toast, escapeHtml, makeId, pad2)
   'js/moods.js',
   'js/i18n.js',
   'js/storage.js',
@@ -56,6 +58,7 @@ const PRECACHE_URLS = [
   'css/dashboard.css',
   // --- birthdays page ---
   'js/birthdays.js',
+  'js/dateconverter.js', // Jalali <-> Gregorian Date Converter
   'css/birthdays.css',
   // --- accounts & cloud sync (Supabase) ---
   'js/vendor/supabase.js', // supabase-js v2 UMD build (vendored, no CDN)

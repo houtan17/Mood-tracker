@@ -33,15 +33,7 @@ var Auth = (function () {
   function $(id) { return document.getElementById(id); }
   function cl() { return SupaConfig.getClient(); }
 
-  function showToast(msg) {
-    var holder = document.getElementById("toastHolder");
-    if (!holder) return;
-    var box = document.createElement("div");
-    box.className = "toast-box";
-    box.textContent = msg;
-    holder.appendChild(box);
-    setTimeout(function () { box.remove(); }, 2400);
-  }
+  /* Toasts come from js/ui.js (UI.toast). */
 
   function whenReady(cb) {
     if (readyFlag) { cb(); return; }
@@ -87,7 +79,7 @@ var Auth = (function () {
       if (window.Sync) Sync.setAuthUser(user);
       if (justSignedIn) {
         closeModal();
-        showToast(I18N.t("authLoginOk"));
+        UI.toast(I18N.t("authLoginOk"));
       }
     }
   }
@@ -239,7 +231,7 @@ var Auth = (function () {
     }).then(function (res) {
       setBusy(false);
       if (res.error) { showErr(mapError(res.error)); return; }
-      showToast(I18N.t("authResetSent"));
+      UI.toast(I18N.t("authResetSent"));
     }).catch(function () {
       setBusy(false);
       showErr(I18N.t("authErrNetwork"));
@@ -259,7 +251,7 @@ var Auth = (function () {
       if (res.error) { showErr(mapError(res.error)); return; }
       $("authNewPass").value = "";
       closeModal();
-      showToast(I18N.t("authPassChanged"));
+      UI.toast(I18N.t("authPassChanged"));
     }).catch(function () {
       setBusy(false);
       showErr(I18N.t("authErrNetwork"));
@@ -271,9 +263,9 @@ var Auth = (function () {
     closeMenu();
     cl().auth.signOut().then(function () {
       /* onAuthStateChange(SIGNED_OUT) updates the UI + Sync */
-      showToast(I18N.t("authLoggedOut"));
+      UI.toast(I18N.t("authLoggedOut"));
     }).catch(function () {
-      showToast(I18N.t("authErrNetwork"));
+      UI.toast(I18N.t("authErrNetwork"));
     });
   }
 
@@ -372,6 +364,8 @@ var Auth = (function () {
       $("authOrLabel").textContent = I18N.t("authOr");
       $("authGoogleLabel").textContent = I18N.t("authGoogle");
       $("authPassToggle").setAttribute("aria-label", I18N.t("authShowPass"));
+      $("authPassToggle").innerHTML =
+        Icons.get($("authPass").type === "password" ? "eye" : "eye-off");
       $("authHint").textContent = (mode === "signup")
         ? I18N.t("authHintSignup") : I18N.t("authHintLogin");
       $("authSubmitBtn").textContent = busy ? I18N.t("authBusy")
@@ -446,7 +440,7 @@ var Auth = (function () {
       closeMenu();
       if (window.Sync) {
         Sync.syncNow(function (err) {
-          showToast(err ? I18N.t("syncStatusError") : I18N.t("syncStatusSynced"));
+          UI.toast(err ? I18N.t("syncStatusError") : I18N.t("syncStatusSynced"));
         });
       }
     });
@@ -479,6 +473,7 @@ var Auth = (function () {
       input.type = show ? "text" : "password";
       $("authPassToggle").setAttribute("aria-label",
         I18N.t(show ? "authHidePass" : "authShowPass"));
+      $("authPassToggle").innerHTML = Icons.get(show ? "eye-off" : "eye");
     });
 
     /* Escape: close menu first, then the modal

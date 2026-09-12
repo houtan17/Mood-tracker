@@ -15,11 +15,9 @@
 var Streak = (function () {
   "use strict";
 
-  function pad(n) { return n < 10 ? "0" + n : String(n); }
-
   function todayStr() {
     var d = new Date();
-    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+    return d.getFullYear() + "-" + UI.pad2(d.getMonth() + 1) + "-" + UI.pad2(d.getDate());
   }
 
   /* Whole days from date string a to b (local midnight to midnight) */

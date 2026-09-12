@@ -51,8 +51,7 @@ var Storage = (function () {
   }
 
   function dateKey(jy, jm, jd) {
-    function pad(n) { return n < 10 ? "0" + n : String(n); }
-    return jy + "-" + pad(jm) + "-" + pad(jd);
+    return jy + "-" + UI.pad2(jm) + "-" + UI.pad2(jd);
   }
 
   /* ----- Public API ----- */
