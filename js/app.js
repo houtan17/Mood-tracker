@@ -33,7 +33,9 @@ var App = (function () {
 
   /* ----- Static texts (header, buttons) ----- */
   function applyTexts() {
-    $("appTitle").textContent = I18N.t("title");
+    /* Site name from the DB settings (falls back to the i18n title) */
+    $("appTitle").textContent =
+      window.SiteSettings ? SiteSettings.siteTitle(I18N.t("title")) : I18N.t("title");
     $("langToggle").textContent = I18N.t("langSwitchLabel");
     $("todayBtn").textContent = I18N.t("today");
     $("dashboardBtn").textContent = I18N.t("dashboard");
@@ -112,7 +114,9 @@ var App = (function () {
     $("greetText").textContent =
       I18N.t(greetingKey()) + sep + name;
 
-    document.title = $("greetText").textContent + " — " + I18N.t("title");
+    /* Tab title: greeting + site name/title (DB setting over i18n) */
+    document.title = $("greetText").textContent + " — " +
+      (window.SiteSettings ? SiteSettings.pageTitle(I18N.t("title")) : I18N.t("title"));
   }
 
   /* ----- Name dialog (first visit / rename) ----- */

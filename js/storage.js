@@ -8,36 +8,65 @@
      settings: { lang: "fa" | "en" }
    }
    Date keys are zero-padded Jalali: jy-jm-jd
+
+   PERFORMANCE: the parsed blob is cached in memory and
+   written through on save(). Before, every read re-parsed
+   the whole store — one calendar render alone called
+   getEntry() 31+ times (31 full JSON parses per frame).
+   The cache is invalidated by sync.js (which writes this
+   key directly when merging cloud data) via
+   onExternalWrite(), and by the `storage` event so other
+   tabs never see stale data.
    ============================================ */
 
 var Storage = (function () {
   "use strict";
 
   var KEY = "moodTracker.v1";
+  var cache = null;
 
   function defaultData() {
     return { entries: {}, settings: { lang: null } };
   }
 
   function load() {
+    if (cache) return cache;
     try {
       var raw = localStorage.getItem(KEY);
-      if (!raw) return defaultData();
+      if (!raw) { cache = defaultData(); return cache; }
       var data = JSON.parse(raw);
-      if (!data || typeof data !== "object") return defaultData();
-      data.entries = data.entries || {};
-      data.settings = data.settings || {};
-      return data;
+      if (!data || typeof data !== "object") {
+        cache = defaultData();
+      } else {
+        data.entries = data.entries || {};
+        data.settings = data.settings || {};
+        cache = data;
+      }
     } catch (e) {
-      return defaultData();
+      cache = defaultData();
     }
+    return cache;
   }
 
   function save(data) {
     localStorage.setItem(KEY, JSON.stringify(data));
+    cache = data; /* write-through: the object IS the new cache */
     /* Notify the sync engine (guarded: Sync may not be loaded,
        e.g. when running as a plain file or on error pages) */
     if (window.Sync) Sync.onLocalChange("mood");
+  }
+
+  /* Invalidate when the underlying record changes underneath us
+     (sync.js merge / timestamps; another tab via the storage event). */
+  function onExternalWrite(key) {
+    if (key === KEY) cache = null;
+  }
+
+  if (typeof window.addEventListener === "function") {
+    window.addEventListener("storage", function (e) {
+      /* e.key === null means clear(); either way drop the cache */
+      if (e.key === KEY || e.key === null) cache = null;
+    });
   }
 
   /* Settings sync by timestamp (last-write-wins). Streak keys
@@ -59,6 +88,7 @@ var Storage = (function () {
     load: load,
     save: save,
     dateKey: dateKey,
+    onExternalWrite: onExternalWrite,
 
     /* All entries keyed by Jalali date (read-only view) */
     entries: function () { return load().entries; },

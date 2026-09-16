@@ -51,7 +51,10 @@ var ThemeManager = (function () {
     updateButtons();
   }
 
-  /* Themes section buttons (dashboard view): label + active state */
+  /* Themes section buttons (dashboard view): label + active state.
+     The minute tick in auto mode re-applies constantly; rewriting
+     identical innerHTML would force avoidable style/paint work,
+     so unchanged buttons keep their DOM. */
   function updateButtons() {
     var mode = getMode();
     var btns = document.querySelectorAll(".theme-opt[data-theme-mode]");
@@ -61,7 +64,11 @@ var ThemeManager = (function () {
       var active = m === mode;
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", active ? "true" : "false");
-      btn.innerHTML = Icons.get(iconOf(m)) + "<span>" + labelOf(m) + "</span>";
+      var html = Icons.get(iconOf(m)) + "<span>" + labelOf(m) + "</span>";
+      if (btn._sig !== html) {
+        btn._sig = html;
+        btn.innerHTML = html;
+      }
     });
   }
 
@@ -69,11 +76,24 @@ var ThemeManager = (function () {
     if (MODES.indexOf(mode) === -1 || mode === getMode()) return;
     Storage.setSetting("theme", mode);
     apply();
+    syncAutoTimer(); /* start/stop the minute interval for auto mode */
   }
 
-  /* Re-evaluate auto mode every minute */
+  /* Re-evaluate auto mode every minute. The timer only runs while
+     auto is active: a fixed light/dark theme never changes on its
+     own, so keeping the interval alive was pure battery drain. */
   function tick() {
     if (getMode() === "auto") apply();
+  }
+
+  function syncAutoTimer() {
+    var auto = getMode() === "auto";
+    if (auto && timerId === null) {
+      timerId = setInterval(tick, 60000);
+    } else if (!auto && timerId !== null) {
+      clearInterval(timerId);
+      timerId = null;
+    }
   }
 
   return {
@@ -86,12 +106,13 @@ var ThemeManager = (function () {
           setMode(btn.getAttribute("data-theme-mode"));
         });
       });
-      if (timerId === null) {
-        timerId = setInterval(tick, 60000);
-      }
+      syncAutoTimer();
     },
 
-    refresh: apply,
+    refresh: function () {
+      apply();
+      syncAutoTimer();
+    },
     setMode: setMode,
     getMode: getMode,
     resolvedLabel: function () { return labelOf(resolved()); }

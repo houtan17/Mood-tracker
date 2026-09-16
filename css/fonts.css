@@ -1,0 +1,24 @@
+/* ============================================
+   FONT — css/fonts.css
+   Self-hosted Vazirmatn variable font (v33.003,
+   SIL OFL — see fonts/OFL.txt).
+
+   One file covers Arabic + Latin at every weight
+   (wght 100-900), so the whole site (fa + en) and
+   the admin panel share a single 111 KB face.
+   Self-hosting beats the Google Fonts CDN here:
+   same-origin (fast), precacheable by the service
+   worker (typography works offline), and no
+   render-blocking third-party request.
+
+   font-display: swap shows text immediately in the
+   fallback face and swaps when the font arrives.
+   ============================================ */
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("../fonts/Vazirmatn-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

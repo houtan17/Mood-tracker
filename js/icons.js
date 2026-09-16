@@ -58,11 +58,16 @@ var Icons = (function () {
   }
 
   /* Replace every <span data-ico="name"> marker in `root`
-     (or the whole document) with the matching SVG. */
+     (or the whole document) with the matching SVG.
+
+     `Icons.get` is called instead of the closure-local `get` on
+     purpose: the Admin Panel wraps Icons.get to add names that are
+     not in the base set (e.g. "menu"), and hydration must pick up
+     the wrapped version so those markers fill in too. */
   function hydrate(root) {
     var nodes = (root || document).querySelectorAll("[data-ico]");
     Array.prototype.forEach.call(nodes, function (el) {
-      var svg = get(el.getAttribute("data-ico"));
+      var svg = Icons.get(el.getAttribute("data-ico"));
       if (svg) el.innerHTML = svg;
     });
   }

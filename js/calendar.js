@@ -32,12 +32,16 @@ var Calendar = (function () {
     var grid = document.getElementById("daysGrid");
     var weekdayRow = document.getElementById("weekdayRow");
     var monthTitle = document.getElementById("monthTitle");
-    grid.innerHTML = "";
 
-    /* Weekday headers (Saturday first) */
-    weekdayRow.innerHTML = I18N.t("weekdays")
-      .map(function (w) { return '<div class="weekday-cell">' + w + "</div>"; })
-      .join("");
+    /* Weekday headers depend only on the language — rebuilding
+       them on every month navigation forced identical DOM churn.
+       They are refreshed automatically when the language flips. */
+    if (weekdayRow._lang !== I18N.lang) {
+      weekdayRow._lang = I18N.lang;
+      weekdayRow.innerHTML = I18N.t("weekdays")
+        .map(function (w) { return '<div class="weekday-cell">' + w + "</div>"; })
+        .join("");
+    }
 
     /* Title: "Mordad 1404" or "مرداد ۱۴۰۴" */
     var monthName = I18N.t("months")[state.jm - 1];
@@ -52,20 +56,22 @@ var Calendar = (function () {
     var firstJsDate = new Date(firstGreg.gy, firstGreg.gm - 1, firstGreg.gd);
     var leading = (firstJsDate.getDay() + 1) % 7; // Saturday-first index
 
-    for (var b = 0; b < leading; b += 1) {
-      var blank = document.createElement("div");
-      blank.className = "day-cell is-empty";
-      grid.appendChild(blank);
-    }
-
     var t = today();
     var length = Jalali.monthLength(state.jy, state.jm);
     var selectedDay = App.selectedDate;
+    var frag = document.createDocumentFragment();
+
+    for (var b = 0; b < leading; b += 1) {
+      var blank = document.createElement("div");
+      blank.className = "day-cell is-empty";
+      frag.appendChild(blank);
+    }
 
     for (var d = 1; d <= length; d += 1) {
       var cell = document.createElement("button");
       cell.type = "button";
       cell.className = "day-cell";
+      cell.setAttribute("data-day", d); // consumed by the delegated listener
 
       /* Staggered entrance delay (GPU-friendly transform/opacity only) */
       cell.style.animationDelay = Math.min((leading + d) * 8, 400) + "ms";
@@ -98,21 +104,40 @@ var Calendar = (function () {
       cell.innerHTML =
         '<span class="day-number">' + I18N.formatNumber(d) + "</span>" + moodHtml;
 
-      if (!cell.disabled) {
-        (function (day) {
-          cell.addEventListener("click", function () {
-            if (onDayClick) onDayClick({ jy: state.jy, jm: state.jm, jd: day });
-          });
-        })(d);
-      }
-
-      grid.appendChild(cell);
+      frag.appendChild(cell);
     }
+
+    /* One reflow instead of ~36 incremental appends */
+    grid.innerHTML = "";
+    grid.appendChild(frag);
   }
 
   return {
     init: function (clickHandler) {
       onDayClick = clickHandler;
+
+      /* One delegated listener for the whole grid instead of a
+         fresh closure per day cell on every render (31+ closures
+         were created and thrown away each time the month moved).
+         Disabled cells never dispatch click, and the data-day
+         guard keeps empty placeholders inert. */
+      var grid = document.getElementById("daysGrid");
+      if (grid) {
+        grid.addEventListener("click", function (e) {
+          if (!onDayClick) return;
+          var target = e.target;
+          var cell = target && target.closest
+            ? target.closest(".day-cell[data-day]")
+            : null;
+          if (!cell || cell.disabled) return;
+          onDayClick({
+            jy: state.jy,
+            jm: state.jm,
+            jd: +cell.getAttribute("data-day")
+          });
+        });
+      }
+
       this.goToday();
     },
 

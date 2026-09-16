@@ -1,0 +1,8 @@
+# The Admin Panel must not be indexed. The /admin/ page also carries
+# <meta name="robots" content="noindex, nofollow"> (defense in depth).
+User-agent: *
+Disallow: /admin/
+Allow: /
+
+# Optional sitemap (once it exists — see Admin Panel → SEO):
+# Sitemap: https://YOUR-SITE.netlify.app/sitemap.xml

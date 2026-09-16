@@ -387,7 +387,10 @@ var I18N = (function () {
 
       document.documentElement.lang = lang;
       document.documentElement.dir = this.t("dir");
-      document.title = this.t("title");
+      /* Site name/title from the DB settings falls back to i18n title */
+      document.title = window.SiteSettings
+        ? SiteSettings.pageTitle(this.t("title"))
+        : this.t("title");
     },
 
     toggle: function () {

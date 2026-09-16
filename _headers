@@ -1,0 +1,38 @@
+# ============================================================
+# NETLIFY SECURITY HEADERS — _headers
+#
+# Applies to every path:
+#   - X-Content-Type-Options nosniff      (no MIME sniffing)
+#   - X-Frame-Options DENY                (no clickjacking/embedding)
+#   - Referrer-Policy                      (no full URLs on cross-origin)
+#   - Permissions-Policy                   (camera/mic/geolocation off)
+#
+# The Admin Panel additionally gets:
+#   - a strict Content-Security-Policy (NO script 'unsafe-inline' —
+#     the theme pre-paint lives in admin/js/admin-theme-init.js)
+#   - Cache-Control: no-store (auth-gated page assets must not be cached)
+#
+# connect-src 'self' intentionally covers the Analytics dashboard's same-origin
+# call to /.netlify/functions/ga-report, the Users directory's call to
+# /.netlify/functions/admin-users and the Versions screen's call to
+# /.netlify/functions/admin-versions — all same-origin, so no CSP relaxation
+# was needed for Phases 6, 7 or 8. script-src 'self' covers the matching
+# modules (admin-analytics.js, admin-users.js, admin-versions.js).
+# Each endpoint's own no-store header is declared in netlify.toml (a function
+# path cannot be targeted reliably from this file).
+#
+# The PUBLIC site intentionally has NO CSP here: its policy must allow
+# Google Fonts, GTAG analytics, Supabase REST/WebSocket and the PWA
+# service worker — that combination needs careful production testing
+# before a restrictive CSP is applied (see README › Security).
+# ============================================================
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+/admin/*
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; img-src 'self' data:; media-src 'none'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; form-action 'self'; upgrade-insecure-requests

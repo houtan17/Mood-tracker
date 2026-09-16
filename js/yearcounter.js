@@ -22,21 +22,28 @@ var YearCounter = (function () {
     var todayJdn = Jalali.jdn(t.jy, t.jm, t.jd);
     var passed = todayJdn - startJdn + 1; // today counts as passed
 
-    /* Total days in this Jalali year (365, or 366 in leap years) */
+    /* Total days in this Jalali year (365, or 366 in leap years).
+       Month lengths are computed once — the old loop re-called
+       monthLength() for every single dot (~377 calls per render). */
+    var lengths = [];
     var total = 0;
-    for (var m = 1; m <= 12; m += 1) total += Jalali.monthLength(t.jy, m);
+    for (var m = 1; m <= 12; m += 1) {
+      var len = Jalali.monthLength(t.jy, m);
+      lengths.push(len);
+      total += len;
+    }
 
     /* Build the dots; each one is titled with its Jalali date */
     var months = I18N.t("months");
     var html = "";
-    var mi = 1, di = 1;
+    var mi = 0, di = 1;
     for (var i = 1; i <= total; i += 1) {
       var cls = "year-dot" + (i <= passed ? " is-passed" : "") +
         (i === passed ? " is-today" : "");
       html += '<span class="' + cls + '" title="' +
-        I18N.formatNumber(di) + " " + months[mi - 1] + '"></span>';
+        I18N.formatNumber(di) + " " + months[mi] + '"></span>';
       di += 1;
-      if (di > Jalali.monthLength(t.jy, mi)) { mi += 1; di = 1; }
+      if (di > lengths[mi]) { mi += 1; di = 1; }
     }
     grid.innerHTML = html;
 

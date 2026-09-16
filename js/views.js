@@ -27,13 +27,17 @@ var Views = (function () {
     });
   }
 
-  function sync() {
+  /* Single source of truth: set the body attribute, sync the nav,
+     and refresh views with live data. Every entry point converges
+     here exactly once per navigation. */
+  function apply(name) {
+    document.body.setAttribute("data-view", name);
     updateNav();
     /* Views with live data refresh every time they open */
-    if (active() === "dashboard" && window.Dashboard && Dashboard.show) {
+    if (name === "dashboard" && window.Dashboard && Dashboard.show) {
       Dashboard.show();
     }
-    if (active() === "birthdays" && window.Birthdays && Birthdays.render) {
+    if (name === "birthdays" && window.Birthdays && Birthdays.render) {
       Birthdays.render();
     }
   }
@@ -41,11 +45,11 @@ var Views = (function () {
   /* Public: switch to a view (creates a history entry) */
   function show(name) {
     if (VIEWS.indexOf(name) === -1) name = "home";
-    document.body.setAttribute("data-view", name);
     if (location.hash !== "#" + name) {
-      location.hash = name; // triggers hashchange -> sync()
+      location.hash = name; // hashchange -> apply() exactly once
+    } else {
+      apply(name); // hash already current: nothing else will fire
     }
-    sync();
     window.scrollTo(0, 0);
   }
 
@@ -55,14 +59,12 @@ var Views = (function () {
   }
 
   window.addEventListener("hashchange", function () {
-    document.body.setAttribute("data-view", hashName());
-    sync();
+    apply(hashName());
     window.scrollTo(0, 0); // browser back/forward behaves like show()
   });
 
   document.addEventListener("DOMContentLoaded", function () {
-    document.body.setAttribute("data-view", hashName());
-    updateNav();
+    apply(hashName());
 
     /* Wire the bottom-nav buttons (all five items are
        view switchers now) */

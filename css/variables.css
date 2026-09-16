@@ -1,9 +1,24 @@
 /* ============================================
-   THEME TOKENS
-   Edit colors, radius and shadows here to
-   re-theme the whole app.
-   :root                = light palette
-   html[data-theme=dark]= dark palette
+   THEME TOKENS + DESIGN SYSTEM — css/variables.css
+   The single source of truth for the public site's
+   visual system. Layers (highest wins):
+     1. :root            light palette + shared tokens (DEFAULTS)
+     2. html[data-theme] dark palette overrides (independent of light)
+     3. #ss-overrides    validated site_settings values (js/site-settings.js)
+   TOKEN CONTRACT (keep names stable — components + admin depend on them):
+     Colors ..... --bg/--card/--header-glass/--border/--overlay/--text/
+                    --text-muted/--primary(-2/-dark/-soft)/--danger(-soft)
+     Status ..... --success/--warning/--info (+*-soft tints)
+     Mood ....... --mood-N + --mood-N-bg/--mood-N-color (classes + chips)
+     Gradients .. --gradient-bg/--gradient-primary/--gradient-card/
+                    --gradient-mood-N (subtle, derived — see note below)
+     Glass ...... --glass-blur/--glass-opacity/--glass-shadow
+     Radius ..... --radius(-xs/-sm/-md/-lg/-xl/-full)  [--radius legacy alias]
+     Shadows .... --shadow(-sm/-md/-lg/-xl)            [--shadow legacy alias]
+     Type ....... --font(-fa/-en) / --font-size-* / --line-height-*
+     Spacing .... --space-1..12 (4px base)
+     Motion ..... --duration-* / --ease-* / --anim-speed
+     Components . --btn-* / --input-* / --card-* / --modal-* / --focus-ring
    ============================================ */
 
 :root {
@@ -23,9 +38,22 @@
 
   /* Accent (primary + secondary stop of gradients) */
   --primary: #5b7cfa;
-  --primary-2: #8b5cf6;
+  --primary-2: #5b7cfa;
   --primary-dark: #4a68e0;
   --primary-soft: #eef2ff;
+
+  /* Semantic status — purpose-named aliases for the accent core */
+  --secondary: #5b7cfa;
+  --secondary-soft: #eef2ff;
+  --success: #2e9e57;
+  --success-soft: #e0f6e7;
+  --warning: #c98a1b;
+  --warning-soft: #fff3d9;
+  --info: #5b7cfa;
+  --info-soft: #eef2ff;
+
+  /* Focus ring follows the resolved primary (admin-controlled) */
+  --focus-ring: #5b7cfa;
 
   /* Danger (delete button) */
   --danger: #ef5350;
@@ -43,16 +71,95 @@
   --mood-5-bg: #fde3e3;
   --mood-5-color: #d84a4a;
 
+  /* Unified mood alias — the BASE color token per mood (never touched by
+     gradient generation; gradients are derived around it, see below) */
+  --mood-1: #2e9e57;
+  --mood-2: #71a632;
+  --mood-3: #c98a1b;
+  --mood-4: #e07a3f;
+  --mood-5: #d84a4a;
+
+  /* Derived mood gradients (subtle: base bg → slightly deeper sibling).
+     Components pick these up only where explicitly referenced. */
+  --gradient-mood-1: linear-gradient(120deg, #e0f6e7 0%, #d4f0df 100%);
+  --gradient-mood-2: linear-gradient(120deg, #edf7da 0%, #e2f0cf 100%);
+  --gradient-mood-3: linear-gradient(120deg, #fff3d9 0%, #fbeccb 100%);
+  --gradient-mood-4: linear-gradient(120deg, #ffeadb 0%, #f8e0cd 100%);
+  --gradient-mood-5: linear-gradient(120deg, #fde3e3 0%, #f9d8d8 100%);
+
   /* Shape & effects */
   --radius: 18px;
   --radius-sm: 12px;
+  --radius-xs: 8px;
+  --radius-md: 18px;   /* component-medium default (alias of --radius) */
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+  --shadow-sm: 0 2px 8px rgba(70, 80, 130, 0.08);
+  --shadow-md: 0 6px 18px rgba(70, 80, 130, 0.10);
   --shadow: 0 10px 30px rgba(70, 80, 130, 0.10);
   --shadow-lg: 0 14px 40px rgba(70, 80, 130, 0.16);
+  --shadow-xl: 0 20px 55px rgba(70, 80, 130, 0.20);
   --glow: 0 6px 18px rgba(91, 124, 250, 0.35);
 
-  /* Fonts */
-  --font-fa: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
-  --font-en: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  /* Fonts — one face for both languages: Vazirmatn covers
+     Arabic + Latin, so fa and en share the same family and the
+     metric parity is exact. Tahoma/Segoe/Arial stay as offline
+     fallbacks for the brief swap window (font-display: swap). */
+  --font-fa: "Vazirmatn", Tahoma, "Segoe UI", sans-serif;
+  --font-en: "Vazirmatn", "Segoe UI", Arial, sans-serif;
+
+  /* Type scale (base 16px; fluid display size via clamp) */
+  --font-size-xs: 0.72rem;
+  --font-size-sm: 0.82rem;
+  --font-size-md: 0.925rem;
+  --font-size-lg: 1.05rem;
+  --font-size-xl: 1.2rem;
+  --font-size-2xl: clamp(1.4rem, 4.5vw, 1.9rem);
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.55;
+  --line-height-relaxed: 1.75;
+
+  /* Spacing scale (4px base unit) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Motion (durations + standard easings; global speed multiplier
+     lets the engine scale all managed durations: --anim-speed) */
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 350ms;
+  --ease-standard: ease;
+  --ease-emphasized: cubic-bezier(0.22, 0.9, 0.3, 1.2);
+  --anim-speed: 1;
+
+  /* Component tokens (reference globals; components consume these) */
+  --btn-height: 42px;
+  --btn-padding: 0 var(--space-4);
+  --btn-radius: var(--radius-sm);
+  --input-height: 44px;
+  --input-padding: 0 var(--space-3);
+  --input-radius: var(--radius-sm);
+  --card-padding: var(--space-4);
+  --card-radius: var(--radius);
+  --modal-radius: var(--radius-lg);
+  --modal-shadow: var(--shadow-lg);
+
+  /* Gradient + glass system */
+  --gradient-bg: var(--bg-gradient);
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-2));
+  --gradient-card: linear-gradient(180deg, var(--card) 0%, var(--primary-soft) 220%);
+  --glass-opacity: 0.72;
+  --glass-shadow: var(--shadow-md);
+  --glass-border: var(--border);
+
 }
 
 /* ----- Dark palette ----- */
@@ -70,9 +177,22 @@ html[data-theme="dark"] {
   --text-muted: #9099b0;
 
   --primary: #7d95ff;
-  --primary-2: #a78bfa;
+  --primary-2: #7d95ff;
   --primary-dark: #98acff;
   --primary-soft: #232b47;
+
+  /* Semantic status — purpose-named aliases for the accent core (dark) */
+  --secondary: #7d95ff;
+  --secondary-soft: #232b47;
+  --success: #4fce7c;
+  --success-soft: #16321f;
+  --warning: #e6b04f;
+  --warning-soft: #33270e;
+  --info: #7d95ff;
+  --info-soft: #232b47;
+
+  /* Focus ring follows the resolved primary (dark) */
+  --focus-ring: #7d95ff;
 
   --danger: #f27572;
   --danger-soft: #3a2226;
@@ -88,7 +208,65 @@ html[data-theme="dark"] {
   --mood-5-bg: #38191b;
   --mood-5-color: #f07575;
 
+  /* Unified mood alias — the BASE color token per mood (dark, untouched) */
+  --mood-1: #4fce7c;
+  --mood-2: #a3cf5f;
+  --mood-3: #e6b04f;
+  --mood-4: #ef9558;
+  --mood-5: #f07575;
+
+  /* Derived mood gradients (dark: base bg → same bg, 120deg sheen).
+     Components pick these up only where explicitly referenced. */
+  --gradient-mood-1: linear-gradient(120deg, #16321f 0%, #1a3a25 100%);
+  --gradient-mood-2: linear-gradient(120deg, #25301a 0%, #2b3820 100%);
+  --gradient-mood-3: linear-gradient(120deg, #33270e 0%, #3b2e13 100%);
+  --gradient-mood-4: linear-gradient(120deg, #362211 0%, #3e2815 100%);
+  --gradient-mood-5: linear-gradient(120deg, #38191b 0%, #411e21 100%);
+
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 20px 55px rgba(0, 0, 0, 0.60);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.40);
   --glow: 0 6px 18px rgba(125, 149, 255, 0.28);
+}
+
+/* ============================================
+   MANAGED ADMIN TOKENS (additive — safe defaults)
+   These tokens exist for the DB-backed settings
+   (js/site-settings.js + /admin/ panel) and are
+   overridden at runtime via the #ss-overrides
+   <style> injected after this file. The values
+   below are the safe defaults (offline-friendly).
+   ============================================ */
+
+:root {
+  /* Glass/blur intensity consumed by .app-header and
+     .bottom-nav (see css/layout.css / css/home.css).
+     js/site-settings.js re-defines this on :root and
+     html[data-theme=dark] when an admin changes it. */
+  --glass-blur: 12px;
+}
+
+/* Glass off (admin-controlled): surfaces fall back to solid card */
+html[data-glass="off"] .app-header,
+html[data-glass="off"] .bottom-nav {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Animations off (admin-controlled; same guard as reduced-motion) */
+html[data-anim="off"] *,
+html[data-anim="off"] *::before,
+html[data-anim="off"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Accessible focus: visible ring everywhere, consumes --focus-ring */
+:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--primary));
+  outline-offset: 2px;
 }

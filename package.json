@@ -1,0 +1,15 @@
+{
+  "name": "mood-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline-first mood tracker PWA with a private Supabase-backed admin panel. This package.json exists ONLY to declare the dependency required by the GA4 reporting Netlify Function (netlify/functions/ga-report.js); the website itself is plain static files with no build step.",
+  "scripts": {
+    "test": "node tests/_gen_test.js && node tests/analytics.test.js && node tests/seo-manager.test.js && node tests/site-settings.test.js && node tests/sync.test.js && node tests/rls-guard.test.js && node tests/admin-users.test.js && node tests/admin-versions.test.js && node tests/versions-guard.test.js && node tests/performance.test.js && node tests/pwa.test.js && node tests/sw-routing.test.js && node tests/css-sanity.test.js && node tests/check-files.js && node tests/vendor-check.js && node tests/security-scan.js"
+  },
+  "dependencies": {
+    "google-auth-library": "^9.15.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
